@@ -19,6 +19,7 @@ CREATE TABLE task (
     priority BIGINT NOT NULL,
     category task_category NOT NULL,
     task_source task_source NOT NULL,
+    description VARCHAR(2000) NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     completed_at TIMESTAMPTZ
@@ -34,7 +35,7 @@ CREATE TABLE task (
 CREATE TABLE user_context (
     user_id UUID PRIMARY KEY REFERENCES "user"(id) ON DELETE CASCADE,
     -- Miejsce na dodatkowe dane kontekstowe
-    context_data TEXT
+    context_data VARCHAR(5000) NOT NULL,
 );
 ```
 
