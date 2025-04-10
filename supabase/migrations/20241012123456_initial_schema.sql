@@ -3,11 +3,11 @@
 -- description: create tables and types for task management system including tables task, user_context, and processing_log with appropriate row level security policies
 -- note: this migration creates enum types, tables, and applies row level security policies following supabase best practices
 
-create type if not exists task_category as enum ('a','b','c');
+create type task_category as enum ('a','b','c');
 
-create type if not exists task_source as enum ('full-ai','edited-ai','edited-user');
+create type task_source as enum ('full-ai','edited-ai','edited-user');
 
-create table if not exists task (
+create table task (
     id serial primary key,
     user_id uuid not null references auth.users(id) on delete cascade,
     priority bigint not null,
@@ -38,8 +38,8 @@ create policy task_delete_policy on task
     for delete
     using (user_id = current_setting('app.current_user_id')::uuid);
 
-create table if not exists user_context (
-    user_id uuid primary key references "user"(id) on delete cascade,
+create table user_context (
+    user_id uuid primary key references auth.users(id) on delete cascade,
     context_data varchar(5000) not null
 );
 
@@ -62,7 +62,7 @@ create policy user_context_delete_policy on user_context
     for delete
     using (user_id = current_setting('app.current_user_id')::uuid);
 
-create table if not exists processing_log (
+create table processing_log (
     id serial primary key,
     task_id integer not null references task(id) on delete no action,
     user_id uuid not null references auth.users(id) on delete cascade,

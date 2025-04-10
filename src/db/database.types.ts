@@ -25,33 +25,30 @@ export interface Database {
           created_at: string;
           error_message: string | null;
           id: number;
-          message_hash: string;
-          message_length: number;
           processing_time: number;
-          status: boolean;
+          status: number;
           task_id: number;
+          updated_at: string;
           user_id: string;
         };
         Insert: {
           created_at?: string;
           error_message?: string | null;
           id?: number;
-          message_hash: string;
-          message_length: number;
           processing_time: number;
-          status: boolean;
+          status: number;
           task_id: number;
+          updated_at?: string;
           user_id: string;
         };
         Update: {
           created_at?: string;
           error_message?: string | null;
           id?: number;
-          message_hash?: string;
-          message_length?: number;
           processing_time?: number;
-          status?: boolean;
+          status?: number;
           task_id?: number;
+          updated_at?: string;
           user_id?: string;
         };
         Relationships: [
@@ -69,6 +66,7 @@ export interface Database {
           category: Database["public"]["Enums"]["task_category"];
           completed_at: string | null;
           created_at: string;
+          description: string;
           id: number;
           priority: number;
           task_source: Database["public"]["Enums"]["task_source"];
@@ -79,6 +77,7 @@ export interface Database {
           category: Database["public"]["Enums"]["task_category"];
           completed_at?: string | null;
           created_at?: string;
+          description: string;
           id?: number;
           priority: number;
           task_source: Database["public"]["Enums"]["task_source"];
@@ -89,6 +88,7 @@ export interface Database {
           category?: Database["public"]["Enums"]["task_category"];
           completed_at?: string | null;
           created_at?: string;
+          description?: string;
           id?: number;
           priority?: number;
           task_source?: Database["public"]["Enums"]["task_source"];
@@ -99,15 +99,15 @@ export interface Database {
       };
       user_context: {
         Row: {
-          context_data: string | null;
+          context_data: string;
           user_id: string;
         };
         Insert: {
-          context_data?: string | null;
+          context_data: string;
           user_id: string;
         };
         Update: {
-          context_data?: string | null;
+          context_data?: string;
           user_id?: string;
         };
         Relationships: [];
