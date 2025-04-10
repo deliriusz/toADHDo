@@ -1,4 +1,4 @@
-# Aplikacja - tpADHDo (MVP)
+# Aplikacja - toADHDo (MVP)
 
 ## Główny problem
 Osoby z ADHD wrzucone są do społeczeństwa bez znajomości ani tego z czym się borykają, ani skutecznych narzędzi pomocnych w podnoszeniu jakości życia. Jednym z są odmienne podejście do realizacji zadań - standardowe listy TODO nie są efektywne, ponieważ nie zakładają problemów z przerzutnością uwagi, niechęcią do czekania na nagrodę, pseudoefektywnością (robieniem wszystkiego mniej ważnego, tylko nie tego co jest w tym momencie ważne - being busy, not productive).
@@ -21,7 +21,7 @@ Ważne, aby każda TODO miała jasno zdefiniowane cele SMART: Specific, Measurab
 - zmiana kategorii zadania (A, B lub C), oraz jego miejsca w danej kategorii (priorytetu)
 
 ### Co NIE wchodzi w zakres MVP
-- Bogata obsługa multimediów (np. zdjęć przepisów)
+- Bogata obsługa multimediów (np. zdjęć, wideo)
 - Udostępnianie TODO dla innych użytkowników
 - Funkcje społecznościowe
 - organizacja zadań w projekty
