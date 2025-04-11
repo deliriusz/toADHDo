@@ -116,7 +116,7 @@ export interface Database {
     Views: Record<never, never>;
     Functions: Record<never, never>;
     Enums: {
-      task_category: "a" | "b" | "c";
+      task_category: "A" | "B" | "C";
       task_source: "full-ai" | "edited-ai" | "edited-user";
     };
     CompositeTypes: Record<never, never>;
@@ -224,7 +224,7 @@ export const Constants = {
   },
   public: {
     Enums: {
-      task_category: ["a", "b", "c"],
+      task_category: ["A", "B", "C"],
       task_source: ["full-ai", "edited-ai", "edited-user"],
     },
   },
