@@ -1,15 +1,9 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { CreateTaskCommand, TaskCategory } from "../../../types";
+import { getUser } from "@/lib/supabase-utils";
 
 export const prerender = false;
-
-const getUser = async (locals: App.Locals) => {
-  const {
-    data: { user },
-  } = await locals.supabase.auth.getUser();
-  return user;
-};
 
 const getQuerySchema = z.object({
   page: z.string().transform((val: string) => parseInt(val, 1)),
@@ -40,7 +34,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
     validated = getQuerySchema.parse(queryParams);
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    return new Response(JSON.stringify({ error: errorMessage }), { status: 400 });
+    return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 400 });
   }
 
   const page = validated.page;
@@ -82,7 +76,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
     return new Response(JSON.stringify(responsePayload), { status: 200 });
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    return new Response(JSON.stringify({ error: errorMessage }), { status: 500 });
+    return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 500 });
   }
 };
 
@@ -98,7 +92,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     payload = await request.json();
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    return new Response(JSON.stringify({ error: errorMessage }), { status: 400 });
+    return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 400 });
   }
 
   let validated;
@@ -106,7 +100,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     validated = postBodySchema.parse(payload);
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    return new Response(JSON.stringify({ error: errorMessage }), { status: 400 });
+    return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 400 });
   }
 
   // Transform category from uppercase to lowercase before insertion
@@ -127,6 +121,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(JSON.stringify(data), { status: 201 });
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    return new Response(JSON.stringify({ error: errorMessage }), { status: 500 });
+    return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 500 });
   }
 };

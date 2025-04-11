@@ -1,15 +1,9 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { UpdateTaskCommand, TaskCategory } from "../../../types";
+import { getUser } from "@/lib/supabase-utils";
 
 export const prerender = false;
-
-const getUser = async (locals: App.Locals) => {
-  const {
-    data: { user },
-  } = await locals.supabase.auth.getUser();
-  return user;
-};
 
 const updateTaskSchema = z.object({
   priority: z.number().optional(),
@@ -40,7 +34,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
 
     if (error) {
       if (error.code === "PGRST116") {
-        return new Response(JSON.stringify({ error: "Task not found" }), { status: 404 });
+        return new Response(JSON.stringify({ error: "Task not found", original: error }), { status: 404 });
       }
       throw error;
     }
@@ -48,7 +42,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
     return new Response(JSON.stringify(data), { status: 200 });
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    return new Response(JSON.stringify({ error: errorMessage }), { status: 500 });
+    return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 500 });
   }
 };
 
@@ -75,7 +69,7 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     validated = updateTaskSchema.parse(payload);
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    return new Response(JSON.stringify({ error: errorMessage }), { status: 400 });
+    return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 400 });
   }
 
   // Transform category to uppercase if provided
@@ -94,7 +88,7 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
 
     if (error) {
       if (error.code === "PGRST116") {
-        return new Response(JSON.stringify({ error: "Task not found" }), { status: 404 });
+        return new Response(JSON.stringify({ error: "Task not found", original: error }), { status: 404 });
       }
       throw error;
     }
@@ -102,7 +96,7 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     return new Response(JSON.stringify(data), { status: 200 });
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    return new Response(JSON.stringify({ error: errorMessage }), { status: 500 });
+    return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 500 });
   }
 };
 
@@ -122,7 +116,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
 
     if (error) {
       if (error.code === "PGRST116") {
-        return new Response(JSON.stringify({ error: "Task not found" }), { status: 404 });
+        return new Response(JSON.stringify({ error: "Task not found", original: error }), { status: 404 });
       }
       throw error;
     }
@@ -130,6 +124,6 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     return new Response(null, { status: 204 });
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    return new Response(JSON.stringify({ error: errorMessage }), { status: 500 });
+    return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 500 });
   }
 };
