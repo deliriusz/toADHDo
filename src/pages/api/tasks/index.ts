@@ -6,11 +6,19 @@ import { getUser } from "@/lib/supabase-utils";
 export const prerender = false;
 
 const getQuerySchema = z.object({
-  page: z.string().transform((val: string) => parseInt(val, 1)),
-  limit: z.string().transform((val: string) => parseInt(val, 10)),
-  sort_by: z.string(),
-  order: z.enum(["asc", "desc"]),
-  "filter[category]": z.string().transform((val) => val.toUpperCase() as TaskCategory),
+  page: z
+    .string()
+    .transform((val: string) => parseInt(val, 1))
+    .optional(),
+  limit: z
+    .string()
+    .transform((val: string) => parseInt(val, 10))
+    .optional(),
+  order: z.enum(["asc", "desc"]).optional(),
+  "filter[category]": z
+    .string()
+    .transform((val) => val.toUpperCase() as TaskCategory)
+    .optional(),
   "filter[completed]": z.boolean().optional(),
 });
 
@@ -37,8 +45,8 @@ export const GET: APIRoute = async ({ url, locals }) => {
     return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 400 });
   }
 
-  const page = validated.page;
-  const limit = validated.limit;
+  const page = validated.page ?? 1;
+  const limit = validated.limit ?? 10;
   const start = (page - 1) * limit;
   const end = page * limit - 1;
 
@@ -47,7 +55,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
       .from("task")
       .select("*", { count: "exact" })
       .eq("user_id", user.id)
-      .order(validated.sort_by, { ascending: validated.order === "asc" })
+      .order("created_at", { ascending: validated.order === "asc" })
       .range(start, end);
 
     if (validated["filter[category]"]) {
