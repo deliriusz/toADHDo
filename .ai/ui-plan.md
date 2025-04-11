@@ -9,8 +9,8 @@ Aplikacja toADHDo zapewnia responsywny interfejs użytkownika, który wspiera tr
 1. **(Lista zadań)**
    - **Ścieżka widoku:** `/tasks`
    - **Główny cel:** Prezentacja listy zadań użytkownika z paginacją (20 zadań na stronę).
-   - **Kluczowe informacje:** Podsumowanie zadania (treść, kategoria, status ukończenia, data utworzenia).
-   - **Kluczowe komponenty:** Lista zadań, komponent paginacji, przyciski akcji (edycja, usunięcie), przycisk zmiany kategorii ("A" | "B" | "C"), pzycisk do zaznaczania statusu zadania jako wykonane albo niewykonane, przycisk zmiany priorytetu ("up" | "down"), loading spinner.
+   - **Kluczowe informacje:** Tabela (`Table` z Shadcn/ui z wykorzystaniem TanStack Table - https://tanstack.com/table ). `TableHeader` zawiera pole tekstowe do filtrowania po opisie taska, pola wyboru filtra statusu i kategorii (`Combobox` z Shadcn/ui). Każdy wiersz zawiera pola do zaznaczenia (`Checkbox` z Shadcn/ui do pracy na wielu zadaniach), treść, status (`Checkbox` ukończone, nieukończone), kategoria (`ToggleGroup` z Shadcn/ui z opcjami A | B | C), menu kontekstowe z opcjami (Edytuj, Duplikuj, Usuń). Stopka zawiera elementy do paginacji.
+   - **Kluczowe komponenty:** Tabela z listą zadań, komponent paginacji. Każdy wiersz zawiera przyciski akcji (edycja, usunięcie), przycisk zmiany kategorii ("A" | "B" | "C"), pzycisk do zaznaczania statusu zadania jako wykonane albo niewykonane, przycisk zmiany priorytetu ("up" | "down"), loading spinner.
    - **UX/Dostępność/Security:** Wysoki kontrast, responsywność, komunikaty toast dla potwierdzeń/alertów; autoryzacja i walidacja danych.
 
 2. **Formularz generowania i edycji opisu todo (AI)**

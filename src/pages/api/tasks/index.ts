@@ -55,7 +55,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
       .from("task")
       .select("*", { count: "exact" })
       .eq("user_id", user.id)
-      .order("created_at", { ascending: validated.order === "asc" })
+      .order("priority", { ascending: validated.order === "asc" })
       .range(start, end);
 
     if (validated["filter[category]"]) {
