@@ -8,18 +8,21 @@ export const prerender = false;
 const getQuerySchema = z.object({
   page: z
     .string()
-    .transform((val: string) => parseInt(val, 1))
+    .transform((val: string) => parseInt(val))
     .optional(),
   limit: z
     .string()
-    .transform((val: string) => parseInt(val, 10))
+    .transform((val: string) => parseInt(val))
     .optional(),
   order: z.enum(["asc", "desc"]).optional(),
   "filter[category]": z
     .string()
     .transform((val) => val.toUpperCase() as TaskCategory)
     .optional(),
-  "filter[completed]": z.boolean().optional(),
+  "filter[completed]": z
+    .string()
+    .transform((val) => val.toLowerCase() === "true")
+    .optional(),
 });
 
 const postBodySchema = z.object({
@@ -37,6 +40,8 @@ export const GET: APIRoute = async ({ url, locals }) => {
   }
 
   const queryParams = Object.fromEntries(url.searchParams.entries());
+  console.log(queryParams);
+  console.log("pRSE INT: ", parseInt("1", 2));
   let validated;
   try {
     validated = getQuerySchema.parse(queryParams);
@@ -45,10 +50,14 @@ export const GET: APIRoute = async ({ url, locals }) => {
     return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 400 });
   }
 
+  console.log(url, "validated: ", validated);
+
   const page = validated.page ?? 1;
   const limit = validated.limit ?? 10;
   const start = (page - 1) * limit;
   const end = page * limit - 1;
+
+  console.log(start, end);
 
   try {
     let query = locals.supabase
@@ -61,15 +70,20 @@ export const GET: APIRoute = async ({ url, locals }) => {
     if (validated["filter[category]"]) {
       query = query.eq("category", validated["filter[category]"] as TaskCategory);
     }
-    if (validated["filter[completed]"]) {
+
+    if (validated["filter[completed]"] !== undefined) {
       const completedValue = validated["filter[completed]"] === true;
-      query = query.eq("completed", completedValue);
+      query = completedValue ? query.not("completed_at", "is", null) : query.is("completed_at", null);
     }
 
     const { data, error, count } = await query;
 
     if (error) {
-      throw error;
+      // If the error is not a PGRST103 - requested range not satisfiable, throw the error
+      // Otherwise, continue - response payload will be empty
+      if (error.code !== "PGRST103") {
+        throw error;
+      }
     }
 
     const responsePayload = {
