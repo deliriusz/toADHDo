@@ -15,6 +15,7 @@
 import type { Database } from "./db/database.types";
 
 export type TaskCategory = "A" | "B" | "C";
+export type TaskSource = "full-ai" | "edited-ai" | "edited-user";
 
 // Task DTO: Bezpośrednie mapowanie na rekord zadania z bazy danych.
 export type TaskDTO = Database["public"]["Tables"]["task"]["Row"];
@@ -27,6 +28,7 @@ export type CreateTaskCommand = Omit<
   "id" | "created_at" | "updated_at" | "user_id" | "completed_at" | "category"
 > & {
   category: TaskCategory; // API przesyła kategorię w formacie uppercase; przed zapisem do DB konieczna jest konwersja na lowercase.
+  task_source: TaskSource;
 };
 
 // UpdateTaskCommand: Dane do aktualizacji istniejącego zadania.

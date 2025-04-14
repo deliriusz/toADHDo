@@ -1,0 +1,57 @@
+---
+import TaskCreationForm from "@/components/tasks/TaskCreationForm";
+import ModalDialog from "@/components/tasks/ModalDialog";
+import { Toaster } from "@/components/ui/sonner";
+---
+
+<script>
+  import type { TaskCategory } from "@/types";
+
+  interface DescriptionGeneratedEvent extends CustomEvent {
+    detail: {
+      description: string;
+      category: TaskCategory;
+      note: string;
+    };
+  }
+
+  let modalDialog: HTMLElement | null = null;
+  let taskForm: HTMLElement | null = null;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    modalDialog = document.querySelector("[data-modal-dialog]");
+    taskForm = document.querySelector("[data-task-form]");
+
+    if (modalDialog && taskForm) {
+      taskForm.addEventListener("descriptionGenerated", ((event: DescriptionGeneratedEvent) => {
+        const { description, category, note } = event.detail;
+
+        // Update modal props
+        modalDialog?.setAttribute("data-is-open", "true");
+        modalDialog?.setAttribute("data-original-description", note);
+        modalDialog?.setAttribute("data-generated-description", description);
+        modalDialog?.setAttribute("data-category", category);
+      }) as EventListener);
+
+      modalDialog.addEventListener("closeModal", () => {
+        modalDialog?.setAttribute("data-is-open", "false");
+      });
+    }
+  });
+</script>
+
+<main class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-8">Create New Task</h1>
+  <div class="max-w-2xl mx-auto">
+    <TaskCreationForm client:load data-task-form />
+    <ModalDialog
+      client:load
+      data-modal-dialog
+      data-is-open="false"
+      data-original-description=""
+      data-generated-description=""
+      data-category="B"
+    />
+    <Toaster client:load />
+  </div>
+</main>
