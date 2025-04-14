@@ -23,6 +23,7 @@ const getQuerySchema = z.object({
     .string()
     .transform((val) => val.toLowerCase() === "true")
     .optional(),
+  "filter[description]": z.string().optional(),
 });
 
 const postBodySchema = z.object({
@@ -74,6 +75,16 @@ export const GET: APIRoute = async ({ url, locals }) => {
     if (validated["filter[completed]"] !== undefined) {
       const completedValue = validated["filter[completed]"] === true;
       query = completedValue ? query.not("completed_at", "is", null) : query.is("completed_at", null);
+    }
+
+    if (validated["filter[description]"]) {
+      // Using full text search with English configuration
+      // plainto_tsquery handles converting raw text to a tsquery safely, avoiding syntax errors
+      // to_tsvector creates a document vector from the description text
+      query = query.textSearch("description", validated["filter[description]"], {
+        type: "plain",
+        config: "english",
+      });
     }
 
     const { data, error, count } = await query;

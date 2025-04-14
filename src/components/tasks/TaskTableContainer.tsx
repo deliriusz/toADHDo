@@ -17,7 +17,7 @@ export interface TaskTableFiltersViewModel {
 
 const defaultFilters: TaskTableFiltersViewModel = {
   description: "",
-  status: "all",
+  status: "incompleted",
   category: "all",
 };
 
