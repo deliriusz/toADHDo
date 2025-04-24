@@ -1,16 +1,18 @@
-import { useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent, useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import type { TaskCategory } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import { ReloadIcon, FileTextIcon } from "@radix-ui/react-icons";
+import { TaskCategoryToggle } from "./TaskCategoryToggle";
 
 const MIN_NOTE_LENGTH = 3;
 const MAX_NOTE_LENGTH = 200;
 
 export default function TaskCreationForm() {
+  const noteId = useId();
+  const categoryId = useId();
   const [note, setNote] = useState("");
   const [category, setCategory] = useState<TaskCategory>("B");
   const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +35,10 @@ export default function TaskCreationForm() {
     const newValue = e.target.value;
     setNote(newValue);
     setError(validateNote(newValue));
+  };
+
+  const handleCategoryChange = (_: number, newCategory: TaskCategory) => {
+    setCategory(newCategory);
   };
 
   const handleGenerateDescription = async () => {
@@ -82,67 +88,69 @@ export default function TaskCreationForm() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Task Details</CardTitle>
+    <Card className="rounded-md border shadow-sm">
+      <CardHeader className="bg-muted/50 pb-4">
+        <CardTitle className="flex items-center text-lg">
+          <FileTextIcon className="mr-2 h-5 w-5" />
+          Create New Task
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+      <CardContent className="p-6">
+        <div className="space-y-6">
           <div className="space-y-2">
-            <label htmlFor="note" className="text-sm font-medium">
-              Quick Note
-              <span className="text-muted-foreground ml-1 text-xs">
-                ({note.length}/{MAX_NOTE_LENGTH})
+            <label htmlFor={noteId} className="text-sm font-medium flex justify-between">
+              <span>Quick Note</span>
+              <span
+                className={`text-xs ${note.length > MAX_NOTE_LENGTH ? "text-destructive" : "text-muted-foreground"}`}
+              >
+                {note.length}/{MAX_NOTE_LENGTH}
               </span>
             </label>
             <Textarea
-              id="note"
+              id={noteId}
               placeholder="Enter a quick note about your task..."
               value={note}
               onChange={handleNoteChange}
-              className={`min-h-[100px] ${error ? "border-destructive" : ""}`}
+              className={`min-h-[100px] resize-none transition-colors ${error ? "border-destructive" : ""}`}
               disabled={isLoading}
               aria-invalid={error ? "true" : "false"}
               aria-describedby={error ? "note-error" : undefined}
             />
             {error && (
-              <p id="note-error" className="text-sm text-destructive">
+              <p id="note-error" className="text-sm text-destructive mt-1">
                 {error}
               </p>
             )}
           </div>
           <div className="space-y-2">
-            <label htmlFor="category-group" className="text-sm font-medium">
-              Priority Category
-            </label>
-            <ToggleGroup
-              id="category-group"
-              type="single"
-              value={category}
-              onValueChange={(value: TaskCategory) => setCategory(value)}
-              aria-label="Task Priority"
-              disabled={isLoading}
-            >
-              <ToggleGroupItem value="A" aria-label="High Priority">
-                A
-              </ToggleGroupItem>
-              <ToggleGroupItem value="B" aria-label="Medium Priority">
-                B
-              </ToggleGroupItem>
-              <ToggleGroupItem value="C" aria-label="Low Priority">
-                C
-              </ToggleGroupItem>
-            </ToggleGroup>
+            <div className="flex items-center justify-between">
+              <label htmlFor={categoryId} className="text-sm font-medium">
+                Priority Category
+              </label>
+              <div id={categoryId} className="flex-shrink-0">
+                <TaskCategoryToggle
+                  taskId={-1} // Placeholder ID, not used for new tasks
+                  currentCategory={category}
+                  onCategoryChange={handleCategoryChange}
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
           </div>
-          <div className="flex justify-end">
-            <Button onClick={handleGenerateDescription} disabled={isLoading || !!error} className="min-w-[140px]">
+          <div className="flex justify-end pt-2">
+            <Button
+              onClick={handleGenerateDescription}
+              disabled={isLoading || !!error}
+              className="min-w-[170px] transition-all"
+              size="default"
+            >
               {isLoading ? (
                 <>
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                   Generating...
                 </>
               ) : (
-                "Generate Description"
+                <>Generate Description</>
               )}
             </Button>
           </div>

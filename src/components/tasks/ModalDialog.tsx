@@ -1,15 +1,19 @@
-import { useState, type ChangeEvent, useEffect } from "react";
+import { useState, type ChangeEvent, useEffect, useId } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import type { CreateTaskCommand } from "@/types";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import { ReloadIcon, FileTextIcon, CheckIcon } from "@radix-ui/react-icons";
+import { TaskCategoryToggle } from "./TaskCategoryToggle";
 
 const MAX_DESCRIPTION_LENGTH = 2000;
 const MIN_DESCRIPTION_LENGTH = 10;
 
 export default function ModalDialog() {
+  const originalNoteId = useId();
+  const generatedDescriptionId = useId();
+  const categoryId = useId();
   const [isOpen, setIsOpen] = useState(false);
   const [originalDescription, setOriginalDescription] = useState("");
   const [generatedDescription, setGeneratedDescription] = useState("");
@@ -73,6 +77,10 @@ export default function ModalDialog() {
     setError(validateDescription(newValue));
   };
 
+  const handleCategoryChange = (_: number, newCategory: CreateTaskCommand["category"]) => {
+    setCategory(newCategory);
+  };
+
   const handleClose = () => {
     const event = new CustomEvent("closeModal", { bubbles: true });
     document.querySelector("[data-modal-dialog]")?.dispatchEvent(event);
@@ -123,59 +131,94 @@ export default function ModalDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={() => handleClose()}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Review Generated Description</DialogTitle>
+      <DialogContent className="max-w-3xl rounded-md border shadow-lg sm:max-w-[90vw] md:max-w-3xl">
+        <DialogHeader className="bg-muted/50 pb-2 pt-4">
+          <DialogTitle className="flex items-center text-xl">
+            <FileTextIcon className="mr-2 h-5 w-5" />
+            Review Generated Description
+          </DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="original-note" className="text-sm font-medium">
-              Original Note
-            </label>
-            <Textarea
-              id="original-note"
-              value={originalDescription}
-              readOnly
-              className="min-h-[100px] bg-muted"
-              disabled={isLoading}
-            />
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="generated-description" className="text-sm font-medium">
-              Generated Description
-              <span className="text-muted-foreground ml-1 text-xs">
-                ({editedDescription.length}/{MAX_DESCRIPTION_LENGTH})
-              </span>
-            </label>
-            <Textarea
-              id="generated-description"
-              value={editedDescription}
-              onChange={handleDescriptionChange}
-              className={`min-h-[200px] ${error ? "border-destructive" : ""}`}
-              placeholder="Edit the generated description if needed..."
-              disabled={isLoading}
-              aria-invalid={error ? "true" : "false"}
-              aria-describedby={error ? "description-error" : undefined}
-            />
-            {error && (
-              <p id="description-error" className="text-sm text-destructive">
-                {error}
-              </p>
-            )}
+        <div className="space-y-6 p-4 pt-5">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="space-y-2 md:col-span-1">
+              <div className="flex items-center justify-between">
+                <label htmlFor={originalNoteId} className="text-sm font-medium">
+                  Original Note
+                </label>
+              </div>
+              <Textarea
+                id={originalNoteId}
+                value={originalDescription}
+                readOnly
+                className="min-h-[100px] resize-none bg-muted text-muted-foreground"
+                disabled={isLoading}
+              />
+
+              <div className="mt-4 space-y-2">
+                <label htmlFor={categoryId} className="text-sm font-medium">
+                  Priority
+                </label>
+                <div id={categoryId}>
+                  <TaskCategoryToggle
+                    taskId={-1}
+                    currentCategory={category}
+                    onCategoryChange={handleCategoryChange}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <div className="flex items-center justify-between">
+                <label htmlFor={generatedDescriptionId} className="text-sm font-medium">
+                  Generated Description
+                </label>
+                <span
+                  className={`text-xs ${editedDescription.length > MAX_DESCRIPTION_LENGTH ? "text-destructive" : "text-muted-foreground"}`}
+                >
+                  {editedDescription.length}/{MAX_DESCRIPTION_LENGTH}
+                </span>
+              </div>
+              <Textarea
+                id={generatedDescriptionId}
+                value={editedDescription}
+                onChange={handleDescriptionChange}
+                className={`min-h-[220px] resize-none transition-colors ${error ? "border-destructive" : ""}`}
+                placeholder="Edit the generated description if needed..."
+                disabled={isLoading}
+                aria-invalid={error ? "true" : "false"}
+                aria-describedby={error ? "description-error" : undefined}
+              />
+              {error && (
+                <p id="description-error" className="text-sm text-destructive mt-1">
+                  {error}
+                </p>
+              )}
+            </div>
           </div>
         </div>
-        <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={handleClose} disabled={isLoading}>
+        <hr className="my-1 h-px w-full bg-border" />
+        <DialogFooter className="flex items-center justify-between gap-2 px-6 py-4 sm:justify-between">
+          <Button variant="outline" onClick={handleClose} disabled={isLoading} className="px-4">
             Cancel
           </Button>
-          <Button onClick={handleAccept} disabled={isLoading || !!error} className="min-w-[160px]">
+          <Button
+            onClick={handleAccept}
+            disabled={isLoading || !!error}
+            className="min-w-[180px] transition-all"
+            size="default"
+          >
             {isLoading ? (
               <>
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                 Creating Task...
               </>
             ) : (
-              "Accept & Create Task"
+              <>
+                <CheckIcon className="mr-2 h-4 w-4" />
+                Accept & Create Task
+              </>
             )}
           </Button>
         </DialogFooter>
