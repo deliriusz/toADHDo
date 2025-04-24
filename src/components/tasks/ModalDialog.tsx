@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import type { CreateTaskCommand } from "@/types";
 import { ReloadIcon, FileTextIcon, CheckIcon } from "@radix-ui/react-icons";
 import { TaskCategoryToggle } from "./TaskCategoryToggle";
+import { useModalContext } from "../contexts/ModalContext";
 
 const MAX_DESCRIPTION_LENGTH = 2000;
 const MIN_DESCRIPTION_LENGTH = 10;
@@ -14,14 +15,26 @@ export default function ModalDialog() {
   const originalNoteId = useId();
   const generatedDescriptionId = useId();
   const categoryId = useId();
-  const [isOpen, setIsOpen] = useState(false);
-  const [originalDescription, setOriginalDescription] = useState("");
-  const [generatedDescription, setGeneratedDescription] = useState("");
+  const {
+    isOpen,
+    closeModal,
+    description: generatedDescription,
+    note: originalDescription,
+    category,
+  } = useModalContext();
   const [editedDescription, setEditedDescription] = useState("");
-  const [category, setCategory] = useState<CreateTaskCommand["category"]>("B");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Update the edited description when the generated description changes
+  useEffect(() => {
+    if (generatedDescription) {
+      setEditedDescription(generatedDescription);
+      setError(null);
+    }
+  }, [generatedDescription]);
+
+  // Legacy support for data attributes
   useEffect(() => {
     const element = document.querySelector("[data-modal-dialog]");
     if (!element) return;
@@ -30,24 +43,27 @@ export default function ModalDialog() {
       mutations.forEach((mutation) => {
         if (mutation.type === "attributes") {
           const target = mutation.target as HTMLElement;
-          let origDesc, genDesc;
+          let genDesc = "";
 
           switch (mutation.attributeName) {
             case "data-is-open":
-              setIsOpen(target.getAttribute("data-is-open") === "true");
+              if (target.getAttribute("data-is-open") === "true") {
+                // We don't need to update isOpen as it's controlled by context now
+                // but we keep this for backward compatibility
+              }
               break;
             case "data-original-description":
-              origDesc = target.getAttribute("data-original-description") || "";
-              setOriginalDescription(origDesc);
+              // No need to update, we use context
               break;
             case "data-generated-description":
               genDesc = target.getAttribute("data-generated-description") || "";
-              setGeneratedDescription(genDesc);
-              setEditedDescription(genDesc);
-              setError(null);
+              if (genDesc) {
+                setEditedDescription(genDesc);
+                setError(null);
+              }
               break;
             case "data-category":
-              setCategory((target.getAttribute("data-category") || "B") as CreateTaskCommand["category"]);
+              // No need to update, we use context
               break;
           }
         }
@@ -77,13 +93,14 @@ export default function ModalDialog() {
     setError(validateDescription(newValue));
   };
 
-  const handleCategoryChange = (_: number, newCategory: CreateTaskCommand["category"]) => {
-    setCategory(newCategory);
+  // We keep this for the UI but it doesn't do anything
+  const handleCategoryChange = () => {
+    // Category is now handled by context
   };
 
   const handleClose = () => {
-    const event = new CustomEvent("closeModal", { bubbles: true });
-    document.querySelector("[data-modal-dialog]")?.dispatchEvent(event);
+    // Use context instead of events
+    closeModal();
     setError(null);
   };
 
@@ -130,7 +147,7 @@ export default function ModalDialog() {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => handleClose()}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-3xl rounded-md border shadow-lg sm:max-w-[90vw] md:max-w-3xl">
         <DialogHeader className="bg-muted/50 pb-2 pt-4">
           <DialogTitle className="flex items-center text-xl">

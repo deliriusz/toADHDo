@@ -6,9 +6,21 @@ import type { TaskCategory } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReloadIcon, FileTextIcon } from "@radix-ui/react-icons";
 import { TaskCategoryToggle } from "./TaskCategoryToggle";
+import { useModalContext } from "../contexts/ModalContext";
 
 const MIN_NOTE_LENGTH = 3;
 const MAX_NOTE_LENGTH = 200;
+
+// Add this interface to the global Window object
+declare global {
+  interface Window {
+    openTaskModal?: {
+      description: string;
+      category: string;
+      note: string;
+    };
+  }
+}
 
 export default function TaskCreationForm() {
   const noteId = useId();
@@ -17,6 +29,7 @@ export default function TaskCreationForm() {
   const [category, setCategory] = useState<TaskCategory>("B");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { openModal } = useModalContext();
 
   const validateNote = (value: string): string | null => {
     if (!value.trim()) {
@@ -69,6 +82,18 @@ export default function TaskCreationForm() {
 
       const data = await response.json();
 
+      // Log that we're about to dispatch the event
+      console.log("Opening modal with data:", {
+        description: data.generatedDescription,
+        category,
+        note,
+      });
+
+      // Use the context to open the modal
+      openModal(data.generatedDescription, note, category);
+
+      // Keep the old methods for backward compatibility
+      // Method 1: Create and dispatch the event directly on document
       const event = new CustomEvent("descriptionGenerated", {
         detail: {
           description: data.generatedDescription,
@@ -77,7 +102,20 @@ export default function TaskCreationForm() {
         },
         bubbles: true,
       });
-      document.querySelector("[data-task-form]")?.dispatchEvent(event);
+
+      document.dispatchEvent(event);
+      console.log("Event dispatched to document");
+
+      // Method 2: Use window to share data
+      window.openTaskModal = {
+        description: data.generatedDescription,
+        category,
+        note,
+      };
+
+      // Dispatch a simple event on window
+      window.dispatchEvent(new Event("openTaskModal"));
+      console.log("openTaskModal event dispatched to window");
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to generate description. Please try again.";
       toast.error(errorMessage);
