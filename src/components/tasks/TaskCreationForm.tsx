@@ -58,7 +58,8 @@ export default function TaskCreationForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ note, category }),
+        // TODO: Add user context
+        body: JSON.stringify({ description: note, userContext: "User context" }),
       });
 
       if (!response.ok) {

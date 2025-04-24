@@ -1,0 +1,109 @@
+import { z } from "zod";
+import type { APIRoute } from "astro";
+import { getUser } from "@/lib/supabase-utils";
+
+export const prerender = false;
+
+// Validation schema for request body
+const generateDescriptionSchema = z.object({
+  description: z.string().min(1, "Description is required").max(2000, "Description must be less than 2000 characters"),
+  userContext: z.string().optional().default(""), // Optional user context information
+});
+
+export const POST: APIRoute = async ({ request, locals }) => {
+  // Check that the user is authenticated
+  const user = await getUser(locals);
+  if (!user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
+
+  // Parse and validate request body
+  let payload;
+  try {
+    payload = await request.json();
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 400 });
+  }
+
+  let validated;
+  try {
+    validated = generateDescriptionSchema.parse(payload);
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 400 });
+  }
+
+  const { description, userContext } = validated;
+
+  try {
+    // Create a dummy task_id for now as we don't have a real task yet
+    // In a real scenario, we would either create a task or use an existing one
+    const dummyTaskId = 1; // This would be replaced with a real task ID
+
+    // Create processing log entry
+    const startTime = Date.now();
+    const { error: logError } = await locals.supabase.from("processing_log").insert({
+      user_id: user.id,
+      task_id: dummyTaskId, // Required field
+      status: 1, // Using numeric status (1 = processing)
+      processing_time: 0, // Will be updated after completion
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    if (logError) {
+      throw logError;
+    }
+
+    // In a real implementation, we would call the AI service here
+    // For now, we mock the response as specified in the API plan
+    // We'd use the description and userContext variables as input to the AI service
+    console.log(`Processing user description: ${description}`);
+    console.log(`User context: ${userContext}`);
+    const generatedDescription = "This is AI agent mock response";
+
+    // Calculate processing time
+    const endTime = Date.now();
+    const processingTime = endTime - startTime;
+
+    // Update the processing log with the completed status and actual processing time
+    const { error: updateError } = await locals.supabase
+      .from("processing_log")
+      .update({
+        status: 2, // Using numeric status (2 = completed)
+        processing_time: processingTime,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (updateError) {
+      console.error("Error updating processing log:", updateError);
+      // Continue with the response even if updating the log fails
+    }
+
+    return new Response(JSON.stringify({ generatedDescription }), { status: 200 });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+
+    // Update processing log with error status if possible
+    try {
+      await locals.supabase
+        .from("processing_log")
+        .update({
+          status: 3, // Using numeric status (3 = error)
+          error_message: errorMessage,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1);
+    } catch (logError) {
+      console.error("Error updating processing log with error status:", logError);
+    }
+
+    return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 500 });
+  }
+};
