@@ -2,6 +2,7 @@
 import TaskCreationForm from "@/components/tasks/TaskCreationForm";
 import ModalDialog from "@/components/tasks/ModalDialog";
 import { Toaster } from "@/components/ui/sonner";
+import Layout from "@/layouts/Layout.astro";
 ---
 
 <script>
@@ -40,18 +41,20 @@ import { Toaster } from "@/components/ui/sonner";
   });
 </script>
 
-<main class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-8">Create New Task</h1>
-  <div class="max-w-2xl mx-auto">
-    <TaskCreationForm client:load data-task-form />
-    <ModalDialog
-      client:load
-      data-modal-dialog
-      data-is-open="false"
-      data-original-description=""
-      data-generated-description=""
-      data-category="B"
-    />
-    <Toaster client:load />
-  </div>
-</main>
+<Layout title="New Task | toADHDo">
+  <main class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Create New Task</h1>
+    <div class="max-w-2xl mx-auto">
+      <TaskCreationForm client:load data-task-form />
+      <ModalDialog
+        client:load
+        data-modal-dialog
+        data-is-open="false"
+        data-original-description=""
+        data-generated-description=""
+        data-category="B"
+      />
+      <Toaster client:load />
+    </div>
+  </main>
+</Layout>
