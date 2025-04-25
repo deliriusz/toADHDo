@@ -1,1 +1,1 @@
-implement backend auth using bachked-auth-plan.md
+implement backend auth using backend-auth-plan.md

@@ -8,17 +8,17 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
-// Define the register form schema using Zod
+// Define the registration form schema using Zod
 const registerFormSchema = z
   .object({
     email: z.string().email("Please enter a valid email address"),
-    fullName: z.string().min(2, "Full name must be at least 2 characters").optional(),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
       .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
       .regex(/[0-9]/, "Password must contain at least one number"),
-    confirmPassword: z.string(),
+    confirmPassword: z.string().min(8, "Please confirm your password"),
+    fullName: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -39,9 +39,9 @@ export default function RegisterForm() {
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
       email: "",
-      fullName: "",
       password: "",
       confirmPassword: "",
+      fullName: "",
     },
   });
 
@@ -50,22 +50,18 @@ export default function RegisterForm() {
     setServerError(null);
 
     try {
-      console.log("Register form submitted", data);
-
       // Make API call to register endpoint
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-          fullName: data.fullName,
-        }),
+        body: JSON.stringify(data),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || "Failed to register");
+      const responseData = await response.json();
+
+      if (!response.ok || !responseData.success) {
+        const errorMessage = responseData.error?.message || "Failed to register";
+        throw new Error(errorMessage);
       }
 
       // On successful registration, redirect to login page with success flag
@@ -93,7 +89,7 @@ export default function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="fullName">Full Name (Optional)</Label>
+        <Label htmlFor="fullName">Full Name (optional)</Label>
         <Input id="fullName" type="text" placeholder="John Doe" disabled={loading} {...register("fullName")} />
         {errors.fullName && <p className="text-sm text-destructive">{errors.fullName.message}</p>}
       </div>
