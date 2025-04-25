@@ -6,7 +6,7 @@ import { getUser } from "@/lib/supabase-utils";
 export const prerender = false;
 
 const updateTaskSchema = z.object({
-  priority: z.number().optional(),
+  priority: z.string().optional(),
   category: z.enum(["A", "B", "C"]).optional(),
   task_source: z.enum(["full-ai", "edited-ai", "edited-user"]).optional(),
   description: z.string().optional(),

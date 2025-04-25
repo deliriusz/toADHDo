@@ -68,7 +68,7 @@ export interface Database {
           created_at: string;
           description: string;
           id: number;
-          priority: number;
+          priority: string;
           task_source: Database["public"]["Enums"]["task_source"];
           updated_at: string;
           user_id: string;
@@ -79,7 +79,7 @@ export interface Database {
           created_at?: string;
           description: string;
           id?: number;
-          priority: number;
+          priority: string;
           task_source: Database["public"]["Enums"]["task_source"];
           updated_at?: string;
           user_id: string;
@@ -90,7 +90,7 @@ export interface Database {
           created_at?: string;
           description?: string;
           id?: number;
-          priority?: number;
+          priority?: string;
           task_source?: Database["public"]["Enums"]["task_source"];
           updated_at?: string;
           user_id?: string;

@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { CreateTaskCommand, TaskCategory } from "../../../types";
 import { getUser } from "@/lib/supabase-utils";
+import { calculateLexoRank, lexoRankToString } from "@/lib/lexorank-utils";
 
 export const prerender = false;
 
@@ -27,11 +28,53 @@ const getQuerySchema = z.object({
 });
 
 const postBodySchema = z.object({
-  priority: z.number(),
+  priority: z.string().optional(),
   category: z.enum(["A", "B", "C"]).transform((value) => value.toUpperCase() as TaskCategory),
   task_source: z.enum(["full-ai", "edited-ai", "edited-user"]),
   description: z.string(),
 });
+
+// Create a function to get the next LexoRank for a new task
+async function getNextLexoRank(
+  locals: App.Locals,
+  userId: string,
+  category?: TaskCategory,
+  placing: "top" | "bottom" = "bottom"
+): Promise<string> {
+  // Start building the query
+  let query = locals.supabase.from("task").select("priority").eq("user_id", userId);
+
+  // Add category filter if provided
+  if (category) {
+    query = query.eq("category", category);
+  }
+
+  // Set the ordering based on placing parameter
+  query = query.order("priority", { ascending: placing === "top" });
+
+  // Get the first task in the requested order
+  const { data } = await query.limit(1).single();
+
+  if (!data || !data.priority) {
+    // If no tasks exist, return the initial LexoRank
+    return "0|0:1";
+  }
+
+  // Calculate the next LexoRank
+  // For "top" we need a rank before the first one
+  // For "bottom" we need a rank after the last one
+  if (placing === "top") {
+    // For top, we calculate a rank before the first one
+    // We use empty string as prev and the found task's priority as next
+    const result = calculateLexoRank("", data.priority);
+    return lexoRankToString(result);
+  } else {
+    // For bottom, we calculate a rank after the last one
+    // We use the found task's priority as prev and empty string as next
+    const result = calculateLexoRank(data.priority, "");
+    return lexoRankToString(result);
+  }
+}
 
 export const GET: APIRoute = async ({ url, locals }) => {
   // Check that the user is authenticated
@@ -140,9 +183,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const taskData: CreateTaskCommand = {
     ...validated,
     category: validated.category as CreateTaskCommand["category"],
+    priority: validated.priority || "", // Default empty string to be replaced
   };
 
   try {
+    if (!taskData.priority) {
+      // Get the next LexoRank value if none provided
+      taskData.priority = await getNextLexoRank(locals, user.id, taskData.category, "bottom");
+    }
+
     const { data, error } = await locals.supabase
       .from("task")
       .insert([{ ...taskData, user_id: user.id }])
