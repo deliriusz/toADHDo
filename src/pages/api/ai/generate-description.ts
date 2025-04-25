@@ -1,6 +1,10 @@
 import { z } from "zod";
 import type { APIRoute } from "astro";
 import { getUser } from "@/lib/supabase-utils";
+import { OpenRouterService } from "@/lib/openrouter.service";
+
+// Get OpenRouter API key from environment variables
+const OPENROUTER_API_KEY = import.meta.env.OPENROUTER_API_KEY;
 
 export const prerender = false;
 
@@ -56,12 +60,28 @@ export const POST: APIRoute = async ({ request, locals }) => {
       throw logError;
     }
 
-    // In a real implementation, we would call the AI service here
-    // For now, we mock the response as specified in the API plan
-    // We'd use the description and userContext variables as input to the AI service
-    console.log(`Processing user description: ${description}`);
-    console.log(`User context: ${userContext}`);
-    const generatedDescription = "This is AI agent mock response";
+    // Initialize OpenRouter service
+    if (!OPENROUTER_API_KEY) {
+      throw new Error("OpenRouter API key is not configured");
+    }
+
+    const openRouterService = new OpenRouterService({
+      apiKey: OPENROUTER_API_KEY,
+      defaultSystemMessage:
+        "You are an AI assistant that helps improve task descriptions for people with ADHD. Make the descriptions clear, actionable, and easy to understand. Include appropriate tags for categorization.",
+    });
+
+    // Call OpenRouter service with the description
+    const userMessage = `Task description: ${description}\n${userContext ? `Additional context: ${userContext}` : ""}`;
+
+    // Process the description using OpenRouter service
+    const aiResponse = await openRouterService.sendChatCompletion({
+      userMessage,
+      modelParams: {
+        temperature: 0.7,
+        max_tokens: 5000,
+      },
+    });
 
     // Calculate processing time
     const endTime = Date.now();
@@ -84,7 +104,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
       // Continue with the response even if updating the log fails
     }
 
-    return new Response(JSON.stringify({ generatedDescription }), { status: 200 });
+    return new Response(
+      JSON.stringify({
+        generatedDescription: aiResponse.text,
+        tags: aiResponse.tags,
+      }),
+      { status: 200 }
+    );
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
 
