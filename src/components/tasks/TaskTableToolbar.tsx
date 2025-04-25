@@ -3,6 +3,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import type { TaskTableFiltersViewModel } from "./TaskTableContainer";
 import { useDebouncedCallback } from "use-debounce";
 import type { ChangeEvent } from "react";
+import { Button } from "../ui/button";
+import { PlusIcon } from "lucide-react";
+import { MixerHorizontalIcon, CheckIcon, CircleIcon } from "@radix-ui/react-icons";
 
 interface TaskTableToolbarProps {
   filters: TaskTableFiltersViewModel;
@@ -17,12 +20,16 @@ export function TaskTableToolbar({ filters, onFilterChange, selectedRowCount }: 
     300
   );
 
+  const handleAddTaskClick = () => {
+    window.location.href = "/tasks/new";
+  };
+
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
           placeholder="Filter tasks..."
-          className="h-8 w-full sm:w-[150px] lg:w-[250px]"
+          className="h-8 w-full sm:w-[150px] lg:w-[500px]"
           defaultValue={filters.description}
           onChange={(e: ChangeEvent<HTMLInputElement>) => debouncedDescriptionChange(e.target.value)}
         />
@@ -31,13 +38,28 @@ export function TaskTableToolbar({ filters, onFilterChange, selectedRowCount }: 
           value={filters.status}
           onValueChange={(value: string) => onFilterChange({ status: value as TaskTableFiltersViewModel["status"] })}
         >
-          <SelectTrigger className="h-8 w-[120px]">
+          <SelectTrigger className="h-8 w-[170px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="incompleted">Incompleted</SelectItem>
+            <SelectItem value="all">
+              <div className="flex items-center">
+                <MixerHorizontalIcon className="mr-2 h-4 w-4" />
+                All
+              </div>
+            </SelectItem>
+            <SelectItem value="completed">
+              <div className="flex items-center">
+                <CheckIcon className="mr-2 h-4 w-4" />
+                Completed
+              </div>
+            </SelectItem>
+            <SelectItem value="incompleted">
+              <div className="flex items-center">
+                <CircleIcon className="mr-2 h-4 w-4" />
+                Incompleted
+              </div>
+            </SelectItem>
           </SelectContent>
         </Select>
 
@@ -57,6 +79,11 @@ export function TaskTableToolbar({ filters, onFilterChange, selectedRowCount }: 
             <SelectItem value="C">Category C</SelectItem>
           </SelectContent>
         </Select>
+
+        <Button size="sm" variant="default" onClick={handleAddTaskClick}>
+          <PlusIcon className="size-4" />
+          Add Task
+        </Button>
       </div>
 
       {selectedRowCount > 0 && (

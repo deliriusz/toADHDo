@@ -7,6 +7,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
+import { LogoutButton } from "@/components/ui/LogoutButton";
 
 // View Models for component state
 export interface TaskTableFiltersViewModel {
@@ -219,11 +220,11 @@ export function TaskTableContainer() {
 
     const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
     const targetTask = data?.data[targetIndex];
-    if (!targetTask) return;
+    if (!targetTask || !data?.data) return;
 
     // Swap priorities
     await updateTask(taskId, { priority: targetTask.priority });
-    await updateTask(targetTask.id, { priority: data!.data[currentIndex].priority });
+    await updateTask(targetTask.id, { priority: data.data[currentIndex].priority });
   };
 
   const handleEdit = (taskId: number) => {
@@ -244,6 +245,10 @@ export function TaskTableContainer() {
 
   return (
     <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Tasks</h1>
+        <LogoutButton variant="outline" size="sm" />
+      </div>
       <TaskTableToolbar
         filters={filters}
         onFilterChange={handleFilterChange}
