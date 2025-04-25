@@ -79,12 +79,14 @@ Konfiguracja w `astro.config.mjs` pozostaje bez zmian (adapter Node, server-side
 ## 3. SYSTEM AUTENTYKACJI
 
 ### 3.1 Integracja z Supabase Auth
-- Instancja `supabaseClient` jest definiowana i eksportowana w `src/db/supabase.client.ts`:
+- Klient Supabase jest konfigurowany w pliku `src/db/supabase.client.ts`:
   ```ts
   import { createClient } from '@supabase/supabase-js';
-  import type { Database } from 'src/db/database.types.ts';
-  const supabaseUrl = import.meta.env.SUPABASE_URL!;
-  const supabaseAnonKey = import.meta.env.SUPABASE_KEY!;
+  import type { Database } from './database.types';
+  
+  const supabaseUrl = import.meta.env.SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.SUPABASE_KEY;
+  
   export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
   export type SupabaseClient = typeof supabaseClient;
   ```
@@ -103,7 +105,7 @@ export type SupabaseClient = typeof supabaseClient;
 
 ### 3.3 Zarządzanie sesją
 - Supabase automatycznie zapisuje tokeny w cookies HttpOnly.
-- W Astro middleware używać `supabase.auth.getSession()` do odczytu stanu logowania.
+- W middleware Astro (`src/middleware/index.ts`) używać `context.locals.supabase.auth.getSession()` do odczytu stanu sesji.
 - Client-side: opcjonalnie hook `useSession` z `@supabase/auth-helpers-react`.
 
 ### 3.4 Wylogowanie

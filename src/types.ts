@@ -57,3 +57,26 @@ export interface PaginatedResponse<T> {
     limit: number;
   };
 }
+
+// Auth related DTOs
+export interface RegisterDto {
+  email: string;
+  password: string;
+  fullName?: string;
+}
+
+export interface LoginDto {
+  email: string;
+  password: string;
+}
+
+export interface ForgotPasswordDto {
+  email: string;
+}
+
+// Unified API response format for auth endpoints
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: { code: string; message: string };
+}

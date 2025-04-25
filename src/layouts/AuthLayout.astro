@@ -1,0 +1,47 @@
+---
+import "../styles/global.css";
+import { Toaster } from "@/components/ui/sonner";
+import { ViewTransitions } from "astro:transitions";
+
+interface Props {
+  title?: string;
+}
+
+const { title = "toADHDo" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <ViewTransitions />
+  </head>
+  <body class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div class="container mx-auto flex min-h-screen flex-col items-center justify-center px-4 py-8">
+      <header class="mb-8 text-center">
+        <h1 class="text-4xl font-bold text-primary">toADHDo</h1>
+        <p class="mt-2 text-lg text-muted-foreground">Task management designed for ADHD brains</p>
+      </header>
+
+      <main class="w-full max-w-md rounded-lg border bg-card p-8 shadow-sm">
+        <slot />
+        <Toaster richColors closeButton client:only="react" />
+      </main>
+
+      <footer class="mt-8 text-center text-sm text-muted-foreground">
+        <p>&copy; {new Date().getFullYear()} toADHDo. All rights reserved.</p>
+      </footer>
+    </div>
+  </body>
+</html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>
