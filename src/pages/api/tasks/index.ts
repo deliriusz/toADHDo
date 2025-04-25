@@ -2,9 +2,16 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { CreateTaskCommand, TaskCategory } from "../../../types";
 import { getUser } from "@/lib/supabase-utils";
-import { calculateLexoRank, lexoRankToString } from "@/lib/lexorank-utils";
+import { lexoRankToString, stringToLexoRank } from "@/lib/lexorank-utils";
 
 export const prerender = false;
+
+// Define the LexoRank interface locally since it's not exported
+interface LexoRank {
+  bucket: 0 | 1 | 2;
+  rank: string;
+  marker: 0 | 1 | 2;
+}
 
 const getQuerySchema = z.object({
   page: z
@@ -53,26 +60,47 @@ async function getNextLexoRank(
   query = query.order("priority", { ascending: placing === "top" });
 
   // Get the first task in the requested order
-  const { data } = await query.limit(1).single();
+  const { data, error } = await query.limit(1).single();
 
-  if (!data || !data.priority) {
-    // If no tasks exist, return the initial LexoRank
-    return "0|0:1";
+  // If no tasks exist or the query returned an error, return the initial LexoRank
+  if (error || !data || !data.priority) {
+    // Initial LexoRank with a proper format
+    return "0|aaaa:1";
   }
 
   // Calculate the next LexoRank
-  // For "top" we need a rank before the first one
-  // For "bottom" we need a rank after the last one
-  if (placing === "top") {
-    // For top, we calculate a rank before the first one
-    // We use empty string as prev and the found task's priority as next
-    const result = calculateLexoRank("", data.priority);
-    return lexoRankToString(result);
-  } else {
-    // For bottom, we calculate a rank after the last one
-    // We use the found task's priority as prev and empty string as next
-    const result = calculateLexoRank(data.priority, "");
-    return lexoRankToString(result);
+  try {
+    if (placing === "top") {
+      // For top placement, we need to create a rank that comes before the first one
+      // We can't use an empty string directly because stringToLexoRank expects a valid format
+      // Instead, create a LexoRank object directly with a rank before the first character
+      const firstRank = stringToLexoRank(data.priority);
+
+      // Create a rank that's lexicographically smaller
+      const newRank: LexoRank = {
+        bucket: firstRank.bucket,
+        rank: "a" + firstRank.rank, // Prefix with 'a' to ensure it sorts before
+        marker: firstRank.marker,
+      };
+
+      return lexoRankToString(newRank);
+    } else {
+      // For bottom placement, create a rank after the last one
+      const lastRank = stringToLexoRank(data.priority);
+
+      // Create a rank that's lexicographically larger
+      const newRank: LexoRank = {
+        bucket: lastRank.bucket,
+        rank: lastRank.rank + "z", // Append 'z' to ensure it sorts after
+        marker: lastRank.marker,
+      };
+
+      return lexoRankToString(newRank);
+    }
+  } catch (err) {
+    // If there's any error in the LexoRank calculation, use a safe default
+    console.error("Error calculating LexoRank:", err);
+    return "0|aaaa:1";
   }
 }
 
