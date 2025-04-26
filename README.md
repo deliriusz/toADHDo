@@ -24,6 +24,9 @@ toADHDo is a task management application designed specifically for individuals w
 - **Frontend:** Astro 5, React 19, TypeScript 5, Tailwind CSS 4, Shadcn/ui
 - **Backend:** Supabase (PostgreSQL, authentication, and more)
 - **AI Integration:** Openrouter.ai for accessing multiple AI models
+- **Testing:**
+  - Unit/Integration: Vitest, React Testing Library (RTL)
+  - E2E: Playwright
 - **CI/CD & Hosting:** GitHub Actions, DigitalOcean, Docker
 
 ## Getting Started Locally
