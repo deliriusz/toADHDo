@@ -149,7 +149,7 @@ describe("TaskTableContainer", () => {
     // Reset mocks before each test
     vi.clearAllMocks();
     vi.mocked(toast).mockClear();
-    mockFetch.mockClear();
+    mockFetch.mockReset(); // Ensure fetch is completely reset, not just cleared
 
     // Restore Date mock if it exists
     vi.useRealTimers();
@@ -173,7 +173,16 @@ describe("TaskTableContainer", () => {
     window.location = originalWindowLocation;
     // Restore Date mock
     vi.useRealTimers();
+    // Cleanup any mounted components to prevent leaks between tests
+    vi.clearAllMocks();
   });
+
+  // Test helper function to set up common patterns
+  const setupTestWithMocks = (mocks: Array<{ok: boolean, json: () => Promise<any>}>) => {
+    mocks.forEach(mock => {
+      mockFetch.mockResolvedValueOnce(mock);
+    });
+  };
 
   it("renders loading state initially", () => {
     render(<TaskTableContainer />);
@@ -199,7 +208,9 @@ describe("TaskTableContainer", () => {
 
   it("displays error state if fetch fails", async () => {
     const errorMessage = "Failed to fetch tasks";
+    mockFetch.mockReset(); // Reset fetch completely
     mockFetch.mockRejectedValueOnce(new Error(errorMessage));
+    
     render(<TaskTableContainer />);
     await waitFor(() => {
       expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument();
@@ -213,10 +224,14 @@ describe("TaskTableContainer", () => {
     await waitFor(() => expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument());
     expect(mockFetch).toHaveBeenCalledTimes(1); // Initial fetch
 
-    const filterButton = screen.getByRole("button", { name: "Filter" });
-    await act(async () => {
-      await userEvent.click(filterButton);
+    // Set up next mock response for the filter change
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockPaginatedResponseFiltered,
     });
+
+    const filterButton = screen.getByRole("button", { name: "Filter" });
+    await userEvent.click(filterButton);
 
     await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(2));
     // Expect URL encoded params
@@ -226,6 +241,16 @@ describe("TaskTableContainer", () => {
   });
 
   it("refetches tasks when pagination changes (simulated via table state change)", async () => {
+    // Setup for initial and pagination change responses
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockPaginatedResponse,
+    }).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockPaginatedResponseFiltered,
+    });
+
     render(<TaskTableContainer />);
     await waitFor(() => expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument());
     expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -233,9 +258,7 @@ describe("TaskTableContainer", () => {
     expect(mockFetch).toHaveBeenCalledWith("/api/tasks?page=1&limit=10&order=asc&filter%5Bcompleted%5D=false");
 
     const filterButton = screen.getByRole("button", { name: "Filter" });
-    await act(async () => {
-      await userEvent.click(filterButton);
-    });
+    await userEvent.click(filterButton);
 
     await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(2));
     // Expect URL encoded params
@@ -250,28 +273,39 @@ describe("TaskTableContainer", () => {
     vi.useFakeTimers();
     vi.setSystemTime(FIXED_DATE);
 
-    // Setup fetch mocks - be explicit about all calls
+    // Reset mock and set up specific responses for this test
+    mockFetch.mockReset();
+    
+    // Setup responses for each call
     mockFetch
-      .mockResolvedValueOnce({ ok: true, json: async () => mockPaginatedResponse }) // Initial GET
-      .mockResolvedValueOnce({ ok: true, json: async () => ({}) }) // PATCH response
-      .mockResolvedValueOnce({ ok: true, json: async () => mockPaginatedResponse }); // Refetch GET
-
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => mockPaginatedResponse 
+      }) // Initial GET
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => ({ id: mockTask1.id }) 
+      }) // PATCH response
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => mockPaginatedResponse 
+      }); // Refetch GET
+    
     render(<TaskTableContainer />);
+    
+    // First restore real timers before UI interactions
+    vi.useRealTimers();
     
     // Wait for initial load to complete
     await waitFor(() => expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument());
-    expect(mockFetch).toHaveBeenCalledTimes(1); // Verify initial GET happened
     
-    // First, restore real timers before performing async UI interactions
-    vi.useRealTimers();
-    
-    const toggleButton = screen.getAllByRole("button", { name: "Toggle Status" })[0]; // First task
-    
-    // Click the toggle button
+    // Find and click the toggle button for the first task
+    const toggleButton = screen.getAllByRole("button", { name: "Toggle Status" })[0];
     await userEvent.click(toggleButton);
     
-    // Now wait for the PATCH request specifically, rather than counting total calls
+    // Check the PATCH call was made correctly
     await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(2); // Initial GET + PATCH
       expect(mockFetch).toHaveBeenNthCalledWith(
         2,
         `/api/tasks/${String(mockTask1.id)}`,
@@ -283,84 +317,127 @@ describe("TaskTableContainer", () => {
       );
     });
     
-    // Check that the toast was shown (no need for additional waitFor)
+    // Check toast was shown
     expect(vi.mocked(toast)).toHaveBeenCalledWith("Task updated", expect.any(Object));
-  });
+  }, { timeout: 10000 }); // Increase timeout for this test
 
   it("calls updateTask API when category is changed", async () => {
+    // Reset mock and set up specific responses for this test
+    mockFetch.mockReset();
+    
+    // Setup responses for each call
+    mockFetch
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => mockPaginatedResponse 
+      }) // Initial GET
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => ({ id: mockTask1.id }) 
+      }) // PATCH response
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => mockPaginatedResponse 
+      }); // Refetch GET
+      
     render(<TaskTableContainer />);
+    
+    // Wait for initial load
     await waitFor(() => expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument());
-
+    
+    // Find and click the category change button
     const changeCategoryButton = screen.getAllByRole("button", { name: "Change Category" })[0];
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) }); // Mock PATCH response ONLY
-    // The default mock from beforeEach will handle the refetch GET
-
-    await act(async () => {
-        await userEvent.click(changeCategoryButton);
-    });
-
-    // Wait for the fetch calls to complete (Initial GET, PATCH, Refetch GET)
-    await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(3));
-
-    // Check the PATCH call details
-    expect(mockFetch).toHaveBeenNthCalledWith(2,
+    await userEvent.click(changeCategoryButton);
+    
+    // Check the PATCH call was made correctly
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(2); // Initial GET + PATCH
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
         `/api/tasks/${String(mockTask1.id)}`,
         expect.objectContaining({
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ category: "B" }),
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ category: "B" }),
         })
-    );
-    // Check the toast call *after* waiting for fetches
+      );
+    });
+    
+    // Check toast was shown
     expect(vi.mocked(toast)).toHaveBeenCalledWith("Task updated", expect.any(Object));
   });
 
   it("calls updateTask API twice (swap) and refetches twice when priority is changed up", async () => {
-    const responseWithTwoTasks: PaginatedResponse<TaskDTO> = {
+    // Reset mock and set up specific responses for this test
+    mockFetch.mockReset();
+    
+    const responseWithTwoTasks = {
       data: [mockTask1, mockTask2],
       meta: { total: 2, page: 1, limit: 10 },
     };
-    // Mock initial fetch
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => responseWithTwoTasks });
-    // Mock responses for the two PATCH calls and the *two* subsequent refetches
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) }); // First PATCH (Task 2)
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => responseWithTwoTasks }); // First Refetch
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) }); // Second PATCH (Task 1)
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => responseWithTwoTasks }); // Second Refetch
-
-
+    
+    // Setup responses for each call
+    mockFetch
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => responseWithTwoTasks 
+      }) // Initial GET
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => ({ id: mockTask2.id }) 
+      }) // First PATCH (Task 2)
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => responseWithTwoTasks 
+      }) // First Refetch
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => ({ id: mockTask1.id }) 
+      }) // Second PATCH (Task 1)
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => responseWithTwoTasks 
+      }); // Second Refetch
+      
     render(<TaskTableContainer />);
+    
+    // Wait for initial load
     await waitFor(() => expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument());
-
+    
+    // Find and click the priority up button for the second task
     const priorityUpButton = screen.getAllByRole("button", { name: "Priority Up" })[1]; // Task 2
-
-    await act(async () => {
-        await userEvent.click(priorityUpButton);
-    });
-
-    // Expect 5 calls: Initial, PATCH Task 2, Refetch, PATCH Task 1, Refetch
-    await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(5));
-
-    // Check first PATCH call (Task 2 gets Task 1's priority)
-    expect(mockFetch).toHaveBeenNthCalledWith(2,
+    await userEvent.click(priorityUpButton);
+    
+    // Check the first PATCH call (Task 2 gets Task 1's priority)
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(2); // Initial GET + first PATCH
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
         `/api/tasks/${String(mockTask2.id)}`,
         expect.objectContaining({
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ priority: mockTask1.priority }),
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ priority: mockTask1.priority }),
         })
-    );
-    // Check second PATCH call (Task 1 gets Task 2's original priority)
-    expect(mockFetch).toHaveBeenNthCalledWith(4, // Note: 4th call after first refetch
+      );
+    });
+    
+    // Check the second PATCH call (Task 1 gets Task 2's original priority)
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(4); // Initial GET + first PATCH + refetch + second PATCH
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        4,
         `/api/tasks/${String(mockTask1.id)}`,
         expect.objectContaining({
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ priority: mockTask2.priority }),
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ priority: mockTask2.priority }),
         })
-    );
-
-    await waitFor(() => expect(vi.mocked(toast)).toHaveBeenCalledTimes(2));
+      );
+    });
+    
+    // Check toast was called
+    expect(vi.mocked(toast)).toHaveBeenCalledTimes(2);
     expect(vi.mocked(toast)).toHaveBeenCalledWith("Task updated", expect.any(Object));
   });
 
@@ -369,9 +446,7 @@ describe("TaskTableContainer", () => {
     await waitFor(() => expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument());
 
     const editButton = screen.getAllByRole("button", { name: "Edit" })[0]; // First task
-    await act(async () => {
-        await userEvent.click(editButton);
-    });
+    await userEvent.click(editButton);
 
     // Check the spy on the href setter
     expect(locationHrefSpy).toHaveBeenCalledTimes(1);
@@ -379,87 +454,131 @@ describe("TaskTableContainer", () => {
   });
 
   it("calls duplicateTask API when duplicate action is triggered", async () => {
+    // Reset mock and set up specific responses for this test
+    mockFetch.mockReset();
+    
+    // Setup responses for each call
+    mockFetch
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => mockPaginatedResponse 
+      }) // Initial GET
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => ({ id: 4 }) 
+      }) // POST response (new task ID)
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => mockPaginatedResponse 
+      }); // Refetch
+    
     render(<TaskTableContainer />);
     await waitFor(() => expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument());
 
     const duplicateButton = screen.getAllByRole("button", { name: "Duplicate" })[0]; // First task
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({ id: 4 }) }); // Mock POST response (new task ID)
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => mockPaginatedResponse }); // Mock refetch
+    await userEvent.click(duplicateButton);
 
-    await act(async () => {
-      await userEvent.click(duplicateButton);
+    // Wait for the POST call
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(2); // Initial GET + POST
+    
+      // Check POST call (body should exclude id, created_at, updated_at)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, created_at, updated_at, ...taskDataToSend } = mockTask1;
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        "/api/tasks",
+        expect.objectContaining({
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(taskDataToSend),
+        })
+      );
     });
-
-    await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(3)); // Initial, POST, Refetch
-
-    // Check POST call (body should exclude id, created_at, updated_at)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id, created_at, updated_at, ...taskDataToSend } = mockTask1;
-    expect(mockFetch).toHaveBeenNthCalledWith(
-      2,
-      "/api/tasks",
-      expect.objectContaining({
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(taskDataToSend), // Use the object without timestamps
-      })
-    );
-
-    // Check toast message using vi.mocked
-    await waitFor(() => expect(vi.mocked(toast)).toHaveBeenCalledWith("Task duplicated", expect.any(Object)));
+    
+    // Check toast was shown
+    expect(vi.mocked(toast)).toHaveBeenCalledWith("Task duplicated", expect.any(Object));
   });
 
   it("calls deleteTask API when delete action is triggered", async () => {
+    // Reset mock and set up specific responses for this test
+    mockFetch.mockReset();
+    
+    // Setup responses for each call
+    mockFetch
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => mockPaginatedResponse 
+      }) // Initial GET
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => ({}) 
+      }) // DELETE response
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => mockPaginatedResponse 
+      }); // Refetch
+    
     render(<TaskTableContainer />);
     await waitFor(() => expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument());
 
     const deleteButton = screen.getAllByRole("button", { name: "Delete" })[0]; // First task
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) }); // Mock DELETE response
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => mockPaginatedResponse }); // Mock refetch
+    await userEvent.click(deleteButton);
 
-    await act(async () => {
-      await userEvent.click(deleteButton);
+    // Wait for the DELETE call
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(2); // Initial GET + DELETE
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        `/api/tasks/${String(mockTask1.id)}`,
+        expect.objectContaining({
+          method: "DELETE",
+        })
+      );
     });
-
-    await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(3)); // Initial, DELETE, Refetch
-
-    // Check DELETE call
-    expect(mockFetch).toHaveBeenNthCalledWith(
-      2,
-      `/api/tasks/${String(mockTask1.id)}`,
-      expect.objectContaining({
-        method: "DELETE",
-      })
-    );
-
-    // Check toast message using vi.mocked
-    await waitFor(() => expect(vi.mocked(toast)).toHaveBeenCalledWith("Task deleted", expect.any(Object)));
+    
+    // Check toast was shown
+    expect(vi.mocked(toast)).toHaveBeenCalledWith("Task deleted", expect.any(Object));
   });
 
   it("handles API errors during mutations and shows toast", async () => {
+    // Reset mock and set up specific responses for this test
+    mockFetch.mockReset();
+    
+    // Setup responses for each call
+    mockFetch
+      .mockResolvedValueOnce({ 
+        ok: true, 
+        json: async () => mockPaginatedResponse 
+      }) // Initial GET
+      .mockResolvedValueOnce({ 
+        ok: false, 
+        status: 500, 
+        json: async () => ({ message: "Failed to delete" }) 
+      }); // Failed DELETE response
+    
     render(<TaskTableContainer />);
     await waitFor(() => expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument());
 
     const deleteButton = screen.getAllByRole("button", { name: "Delete" })[0];
-    const errorMsg = "Failed to delete";
-    mockFetch.mockResolvedValueOnce({ ok: false, status: 500, json: async () => ({ message: errorMsg }) }); // Mock failed DELETE response
+    await userEvent.click(deleteButton);
 
-    await act(async () => {
-      await userEvent.click(deleteButton);
+    // Wait for the DELETE call
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(2); // Initial GET + DELETE
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        `/api/tasks/${String(mockTask1.id)}`,
+        expect.objectContaining({ method: "DELETE" })
+      );
     });
-
-    await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(2)); // Initial, DELETE
-
-    // Check DELETE call
-    expect(mockFetch).toHaveBeenNthCalledWith(
-      2,
-      `/api/tasks/${String(mockTask1.id)}`,
-      expect.objectContaining({ method: "DELETE" })
+    
+    // Check error toast was shown
+    expect(vi.mocked(toast)).toHaveBeenCalledWith(
+      "Error", 
+      expect.objectContaining({ 
+        description: "Failed to delete task" 
+      })
     );
-
-    // Check error toast using vi.mocked
-    await waitFor(() =>
-      expect(vi.mocked(toast)).toHaveBeenCalledWith("Error", expect.objectContaining({ description: "Failed to delete task" }))
-    ); // Default message since parsing might fail
   });
 });

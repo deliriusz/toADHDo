@@ -1,1 +1,2 @@
-implement backend auth using backend-auth-plan.md
+fixing unit tests
+e2e tests with Playwright
