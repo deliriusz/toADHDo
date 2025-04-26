@@ -124,13 +124,16 @@ export function TaskTableContainer() {
   const duplicateTask = async (taskData: TaskDTO) => {
     setIsMutating(true);
     try {
-      const { ...createData } = taskData;
+      // Destructure to exclude id *before* creating the object to send
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, created_at, updated_at, ...createData } = taskData;
 
       const response = await fetch("/api/tasks", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        // Send only the necessary fields for creation
         body: JSON.stringify(createData),
       });
 

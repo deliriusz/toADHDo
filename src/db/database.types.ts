@@ -28,7 +28,7 @@ export interface Database {
           processing_time: number;
           status: number;
           task_id: number;
-          updated_at: string;
+          updated_at: string | null;
           user_id: string;
         };
         Insert: {
@@ -38,7 +38,7 @@ export interface Database {
           processing_time: number;
           status: number;
           task_id: number;
-          updated_at?: string;
+          updated_at?: string | null;
           user_id: string;
         };
         Update: {
@@ -48,7 +48,7 @@ export interface Database {
           processing_time?: number;
           status?: number;
           task_id?: number;
-          updated_at?: string;
+          updated_at?: string | null;
           user_id?: string;
         };
         Relationships: [
@@ -70,7 +70,7 @@ export interface Database {
           id: number;
           priority: string;
           task_source: Database["public"]["Enums"]["task_source"];
-          updated_at: string;
+          updated_at: string | null;
           user_id: string;
         };
         Insert: {
@@ -81,7 +81,7 @@ export interface Database {
           id?: number;
           priority: string;
           task_source: Database["public"]["Enums"]["task_source"];
-          updated_at?: string;
+          updated_at?: string | null;
           user_id: string;
         };
         Update: {
@@ -92,7 +92,7 @@ export interface Database {
           id?: number;
           priority?: string;
           task_source?: Database["public"]["Enums"]["task_source"];
-          updated_at?: string;
+          updated_at?: string | null;
           user_id?: string;
         };
         Relationships: [];
