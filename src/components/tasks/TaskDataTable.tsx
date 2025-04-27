@@ -72,6 +72,7 @@ export function TaskDataTable({
                   <TaskStatusToggle
                     taskId={row.original.id}
                     isCompleted={!!row.original.completed_at}
+                    className={row.original.completed_at ? "checked:bg-green-500" : ""}
                     onStatusChange={onStatusChange}
                     disabled={isMutating}
                   />
