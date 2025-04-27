@@ -7,6 +7,7 @@ import { TaskRowActions } from "./TaskRowActions";
 import { TaskTablePagination } from "./TaskTablePagination";
 import { Checkbox } from "../ui/checkbox";
 import type { TaskDTO, TaskCategory } from "../../types";
+import showdown from "showdown";
 
 interface TaskDataTableProps {
   table: Table<TaskDTO>;
@@ -29,6 +30,8 @@ export function TaskDataTable({
   onDelete,
   isMutating,
 }: TaskDataTableProps) {
+  const converter = new showdown.Converter();
+
   return (
     <div className="space-y-4">
       <div className="rounded-md border">
@@ -63,7 +66,8 @@ export function TaskDataTable({
                     disabled={isMutating}
                   />
                 </TableCell>
-                <TableCell>{row.original.description}</TableCell>
+                {/* TODO: security risk, sanitize input */}
+                <TableCell dangerouslySetInnerHTML={{ __html: converter.makeHtml(row.original.description) }} />
                 <TableCell>
                   <TaskStatusToggle
                     taskId={row.original.id}
