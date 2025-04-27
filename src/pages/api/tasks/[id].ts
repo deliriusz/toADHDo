@@ -10,7 +10,7 @@ const updateTaskSchema = z.object({
   category: z.enum(["A", "B", "C"]).optional(),
   task_source: z.enum(["full-ai", "edited-ai", "edited-user"]).optional(),
   description: z.string().optional(),
-  completed_at: z.string().datetime().optional(),
+  completed_at: z.string().datetime().nullable().optional(),
 });
 
 export const GET: APIRoute = async ({ params, locals }) => {
