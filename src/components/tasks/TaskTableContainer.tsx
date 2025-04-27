@@ -8,6 +8,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { LogoutButton } from "@/components/ui/LogoutButton";
+import { ModalProvider } from "@/components/contexts/ModalContext";
+import { MultiStepTaskCreationModal } from "./MultiStepTaskCreationModal";
 
 // View Models for component state
 export interface TaskTableFiltersViewModel {
@@ -252,11 +254,15 @@ export function TaskTableContainer() {
         <h1 className="text-2xl font-bold">Tasks</h1>
         <LogoutButton variant="outline" size="sm" />
       </div>
-      <TaskTableToolbar
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        selectedRowCount={Object.keys(rowSelection).length}
-      />
+
+      <ModalProvider>
+        <TaskTableToolbar
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          selectedRowCount={Object.keys(rowSelection).length}
+        />
+        <MultiStepTaskCreationModal />
+      </ModalProvider>
       <TaskDataTable
         table={table}
         onStatusChange={handleStatusChange}

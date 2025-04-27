@@ -15,6 +15,7 @@ vi.mock("@/components/tasks/TaskTableToolbar", () => ({
       <button onClick={() => onFilterChange({ description: "test filter" })}>Filter</button>
       <button
         onClick={() => {
+          // Just redirect in the test
           window.location.href = "/tasks/new";
         }}
       >

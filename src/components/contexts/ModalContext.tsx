@@ -4,11 +4,12 @@ import type { TaskCategory } from "@/types";
 
 interface ModalContextType {
   isOpen: boolean;
-  openModal: (description: string, note: string, category: TaskCategory) => void;
+  openModal: (description: string, note: string, category: TaskCategory, id?: string) => void;
   closeModal: () => void;
   description: string;
   note: string;
   category: TaskCategory;
+  id: string | undefined;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -18,12 +19,14 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   const [description, setDescription] = useState("");
   const [note, setNote] = useState("");
   const [category, setCategory] = useState<TaskCategory>("B");
+  const [id, setId] = useState<string | undefined>(undefined);
 
-  const openModal = (description: string, note: string, category: TaskCategory) => {
-    console.log("Opening modal with data:", { description, note, category });
+  const openModal = (description: string, note: string, category: TaskCategory, id?: string) => {
+    console.log("Opening modal with data:", { description, note, category, id });
     setDescription(description);
     setNote(note);
     setCategory(category);
+    setId(id);
     setIsOpen(true);
   };
 
@@ -32,7 +35,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ModalContext.Provider value={{ isOpen, openModal, closeModal, description, note, category }}>
+    <ModalContext.Provider value={{ isOpen, openModal, closeModal, description, note, category, id }}>
       {children}
     </ModalContext.Provider>
   );
