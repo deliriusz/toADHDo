@@ -31,7 +31,7 @@ jobs:
         run: npm run test:unit
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps # Install browsers needed for E2E tests
+        run: npm init playwright@latest --yes "--" . '--quiet' '--browser=chromium' '--gha' # Install browsers needed for E2E tests
 
       - name: Run E2E tests
         run: |
