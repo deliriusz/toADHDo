@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 
 // Ensure the auth directory exists
-const authDir = path.join(process.cwd(), "../playwright/.auth");
+const authDir = path.join(process.cwd(), "./playwright/.auth");
 if (!fs.existsSync(authDir)) {
   fs.mkdirSync(authDir, { recursive: true });
 }
@@ -13,6 +13,8 @@ const authFile = path.join(authDir, "user.json");
 setup("authenticate", async ({ page }) => {
   // Navigate to the login page
   await page.goto("/login");
+
+  await page.waitForLoadState("networkidle");
 
   // Fill in login form with credentials from environment variables
   // These should be set in your .env.test file

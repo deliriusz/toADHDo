@@ -137,6 +137,13 @@ export const MultiStepTaskCreationModal = () => {
         body: JSON.stringify({ description: note, userContext: "User context" }),
       });
 
+      console.log("response ", {
+        status: response.status,
+        ok: response.ok,
+        statusText: response.statusText,
+        body: JSON.stringify(await response.json()),
+      });
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || "Failed to generate description");
@@ -181,6 +188,8 @@ export const MultiStepTaskCreationModal = () => {
           task_source: editedDescription === generatedDescription ? "full-ai" : "edited-ai",
         } as CreateTaskCommand),
       });
+
+      console.log(response);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

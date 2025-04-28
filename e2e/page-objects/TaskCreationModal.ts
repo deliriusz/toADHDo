@@ -39,14 +39,38 @@ export class TaskCreationModal {
 
   /**
    * Click the Generate Description button to proceed to step 1
+   * Waits for either the next step's button or an error message.
    */
   async clickGenerateDescription() {
+    // Click the generate button
     await this.page.getByTestId("generate-description-button").click();
-    // Wait for the step to change and the create task button to be visible
-    await this.page.waitForSelector('[data-testid="create-task-button"], button:has-text("Accept & Create Task")', {
-      state: "visible",
-      timeout: 10000,
-    });
+
+    // Define selectors for success and error states
+    const nextStepSelector = '[data-testid="create-task-button"] button:has-text("Accept & Create Task")';
+    const errorSelector = "text=Failed to generate description";
+
+    // Wait for either the success state or error state using raw selectors
+    const result = await Promise.race([
+      this.page
+        .waitForSelector(nextStepSelector, { state: "visible", timeout: 10000 })
+        .then(() => "success")
+        .catch(() => "timeout-success"),
+      this.page
+        .waitForSelector(errorSelector, { state: "visible", timeout: 10000 })
+        .then(() => "error")
+        .catch(() => "timeout-error"),
+    ]);
+
+    // Handle the result
+    if (result === "error" || (await this.page.isVisible(errorSelector))) {
+      throw new Error("Task description generation failed, preventing progression to the next step.");
+    }
+
+    if (result === "timeout-success" || result === "timeout-error") {
+      throw new Error("Timed out waiting for either the next step button or an error message");
+    }
+
+    // At this point, we expect to be on the next step
   }
 
   /**

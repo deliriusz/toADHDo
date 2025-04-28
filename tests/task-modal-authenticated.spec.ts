@@ -1,40 +1,11 @@
 import { test, expect } from "@playwright/test";
-import { env } from "../e2e/utils/env";
 
 test.describe("Task Creation Modal Test (Authenticated)", () => {
   // Set a fixed viewport size for consistent visual tests
   test.use({ viewport: { width: 1280, height: 720 } });
 
-  test.beforeEach(async ({ page }) => {
-    // Go to the login page first
-    await page.goto("/login");
-    await page.waitForLoadState("networkidle");
-
-    // Try to find the login form elements using multiple strategies
-    const emailInput = await page.$('input[type="email"], #email, [name="email"]');
-    const passwordInput = await page.$('input[type="password"], #password, [name="password"]');
-    const loginButton = await page.$('button[type="submit"], button:has-text("Sign In"), button:has-text("Login")');
-
-    // If any elements are missing, skip the test
-    if (!emailInput || !passwordInput || !loginButton) {
-      console.log("Login form elements not found. Skipping test.");
-      test.skip();
-      return;
-    }
-
-    // Fill in login credentials
-    await emailInput.fill(env.username);
-    await passwordInput.fill(env.password);
-    await loginButton.click();
-
-    // Wait for navigation to complete
-    await page.waitForLoadState("networkidle");
-
-    // If we're still on the login page, skip the test
-    if (page.url().includes("/login")) {
-      console.log("Login failed. Skipping test.");
-      test.skip();
-    }
+  test.beforeEach(async () => {
+    // Authentication is handled by auth.setup.ts
   });
 
   test("should open and interact with task creation modal", async ({ page }) => {

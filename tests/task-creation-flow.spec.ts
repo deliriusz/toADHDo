@@ -1,15 +1,10 @@
 import { test, expect } from "@playwright/test";
-import { LoginPage } from "../e2e/page-objects/LoginPage";
 import { TasksPage } from "../e2e/page-objects/TasksPage";
 
 test.describe("Task Creation Flow", () => {
-  test.beforeEach(async ({ page }) => {
-    // Create page objects
-    const loginPage = new LoginPage(page);
-
-    // Arrange: Go to login page and authenticate with credentials from env
-    await loginPage.goto();
-    await loginPage.login();
+  test.beforeEach(async () => {
+    // Page context is already authenticated via auth.setup.ts
+    // No need for manual login here
   });
 
   test("should create a new task using the multi-step creation modal", async ({ page }) => {

@@ -1,13 +1,9 @@
 import { test, expect } from "@playwright/test";
-import { LoginPage } from "../e2e/page-objects/LoginPage";
 import { TasksPage } from "../e2e/page-objects/TasksPage";
 
 test.describe("Task Creation Modal Visual Testing", () => {
-  test.beforeEach(async ({ page }) => {
-    // Create page objects and login with credentials from env
-    const loginPage = new LoginPage(page);
-    await loginPage.goto();
-    await loginPage.login();
+  test.beforeEach(async () => {
+    // Authentication is handled by auth.setup.ts
   });
 
   test("should match the visual snapshot of the task creation modal", async ({ page }) => {
