@@ -49,6 +49,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const startTime = Date.now();
     const { error: logError } = await locals.supabase.from("processing_log").insert({
       user_id: user.id,
+      // TODO: fix
       task_id: dummyTaskId, // Required field
       status: 1, // Using numeric status (1 = processing)
       processing_time: 0, // Will be updated after completion

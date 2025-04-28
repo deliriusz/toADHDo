@@ -11,6 +11,8 @@ test.describe("Task Creation Modal Visual Testing", () => {
     const tasksPage = new TasksPage(page);
     await tasksPage.goto();
 
+    await page.waitForLoadState("networkidle");
+
     // Act: Open the task creation modal
     await tasksPage.clickAddTask();
 
@@ -22,6 +24,8 @@ test.describe("Task Creation Modal Visual Testing", () => {
     // Arrange: Navigate to tasks page
     const tasksPage = new TasksPage(page);
     await tasksPage.goto();
+
+    await page.waitForLoadState("networkidle");
 
     // Act: Go through the first step of task creation
     await tasksPage.clickAddTask();

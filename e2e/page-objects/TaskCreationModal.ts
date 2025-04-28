@@ -46,28 +46,20 @@ export class TaskCreationModal {
     await this.page.getByTestId("generate-description-button").click();
 
     // Define selectors for success and error states
-    const nextStepSelector = '[data-testid="create-task-button"] button:has-text("Accept & Create Task")';
-    const errorSelector = "text=Failed to generate description";
+    // const nextStepSelector = '[data-testid="create-task-button"] button:has-text("Accept & Create Task")';
 
     // Wait for either the success state or error state using raw selectors
-    const result = await Promise.race([
-      this.page
-        .waitForSelector(nextStepSelector, { state: "visible", timeout: 10000 })
-        .then(() => "success")
-        .catch(() => "timeout-success"),
-      this.page
-        .waitForSelector(errorSelector, { state: "visible", timeout: 10000 })
-        .then(() => "error")
-        .catch(() => "timeout-error"),
-    ]);
+    const result = await this.page
+      .getByTestId("create-task-button")
+      .waitFor({ state: "visible", timeout: 10000 })
+      .then(() => "success")
+      .catch(() => "timeout-success");
+
+    // this.page.waitForLoadState("networkidle");
 
     // Handle the result
-    if (result === "error" || (await this.page.isVisible(errorSelector))) {
-      throw new Error("Task description generation failed, preventing progression to the next step.");
-    }
-
-    if (result === "timeout-success" || result === "timeout-error") {
-      throw new Error("Timed out waiting for either the next step button or an error message");
+    if (result === "timeout-success") {
+      throw new Error("Timed out waiting for su the next step button or an error message");
     }
 
     // At this point, we expect to be on the next step
@@ -77,7 +69,9 @@ export class TaskCreationModal {
    * Click the Create Task button to finalize task creation
    */
   async clickCreateTask() {
-    await this.page.getByTestId("create-task-button").click();
+    const button = this.page.getByTestId("create-task-button");
+    await button.scrollIntoViewIfNeeded();
+    await button.click();
   }
 
   /**

@@ -12,6 +12,8 @@ test.describe("Task Creation Flow", () => {
     const tasksPage = new TasksPage(page);
     await tasksPage.goto();
 
+    await page.waitForLoadState("networkidle");
+
     // Act: Create a new task
     await tasksPage.clickAddTask();
     await tasksPage.taskCreationModal.fillNote("do laundry");

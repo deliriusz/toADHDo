@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Task Creation Modal Test (Authenticated)", () => {
   // Set a fixed viewport size for consistent visual tests
-  test.use({ viewport: { width: 1280, height: 720 } });
+  test.use({ viewport: { width: 1280, height: 3000 } });
 
   test.beforeEach(async () => {
     // Authentication is handled by auth.setup.ts
@@ -49,7 +49,7 @@ test.describe("Task Creation Modal Test (Authenticated)", () => {
       await textarea.fill("do laundry");
 
       // Find and click category A if possible
-      const categoryA = await page.$('[value="A"], button:has-text("A")');
+      const categoryA = await page.$('[value="A"] button:has-text("A")');
       if (categoryA) {
         await categoryA.click();
       }
@@ -59,7 +59,7 @@ test.describe("Task Creation Modal Test (Authenticated)", () => {
 
       // Find the button to proceed (but don't click to avoid side effects)
       const actionButton = await page.$(
-        'button:has-text("Generate"), button:has-text("Create"), button:has-text("Next")'
+        'button:has-text("Generate") button:has-text("Create") button:has-text("Next")'
       );
       expect(actionButton).toBeTruthy();
     }

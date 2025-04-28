@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { TaskCategoryToggle } from "./TaskCategoryToggle";
 import { ReloadIcon, FileTextIcon, CheckIcon } from "@radix-ui/react-icons";
 import type { CreateTaskCommand, TaskCategory } from "@/types";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 
 // Constants from original components
 const MIN_NOTE_LENGTH = 3;
@@ -137,13 +137,6 @@ export const MultiStepTaskCreationModal = () => {
         body: JSON.stringify({ description: note, userContext: "User context" }),
       });
 
-      console.log("response ", {
-        status: response.status,
-        ok: response.ok,
-        statusText: response.statusText,
-        body: JSON.stringify(await response.json()),
-      });
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || "Failed to generate description");
@@ -151,6 +144,8 @@ export const MultiStepTaskCreationModal = () => {
 
       const data = await response.json();
       setEditedDescription(data.generatedDescription);
+
+      console.log("dwescription: ", data.generatedDescription);
 
       // Move to next step
       setStep(1);
@@ -189,8 +184,6 @@ export const MultiStepTaskCreationModal = () => {
         } as CreateTaskCommand),
       });
 
-      console.log(response);
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || "Failed to create task");
@@ -220,6 +213,7 @@ export const MultiStepTaskCreationModal = () => {
   return (
     <Dialog open={isOpen} onOpenChange={handleClose} data-testid="task-creation-modal">
       <DialogContent className="max-w-3xl backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 rounded-2xl border border-white/10 shadow-2xl sm:max-w-[90vw] md:max-w-3xl text-white">
+        <DialogHeader />
         <div className="p-4">
           <div className="flex items-center justify-center mb-4">
             {Array.from({ length: totalSteps }).map((_, index) => (
