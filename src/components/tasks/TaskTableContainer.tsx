@@ -7,7 +7,6 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import { LogoutButton } from "@/components/ui/LogoutButton";
 import { ModalProvider } from "@/components/contexts/ModalContext";
 import { MultiStepTaskCreationModal } from "./MultiStepTaskCreationModal";
 
@@ -254,7 +253,6 @@ export function TaskTableContainer() {
         <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 text-transparent bg-clip-text drop-shadow-lg">
           Tasks
         </h1>
-        <LogoutButton variant="outline" size="sm" className="text-blue-100 border-white/20 hover:bg-white/10" />
       </div>
 
       <ModalProvider>

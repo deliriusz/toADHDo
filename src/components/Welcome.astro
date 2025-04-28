@@ -1,6 +1,22 @@
 <div
   class="relative w-full mx-auto min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900 p-4 sm:p-8"
 >
+  <!-- Login/Register Buttons -->
+  <div class="absolute top-4 right-4 sm:top-8 sm:right-8 flex space-x-4">
+    <a
+      href="/login"
+      class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium border border-white/10 transition-colors"
+    >
+      Sign in
+    </a>
+    <a
+      href="/register"
+      class="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-medium border border-blue-600/30 transition-colors"
+    >
+      Sign up
+    </a>
+  </div>
+
   <div
     class="relative max-w-4xl mx-auto backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 rounded-2xl shadow-2xl p-8 text-white border border-white/10"
   >
@@ -9,10 +25,10 @@
         <h1
           class="text-6xl font-bold mb-4 bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 text-transparent bg-clip-text drop-shadow-lg"
         >
-          Witaj w 10xDevs Astro Starter!
+          toADHDo
         </h1>
         <p class="text-xl text-blue-100/90 drop-shadow-md">
-          Ten projekt został zbudowany w oparciu o nowoczesny stack technologiczny:
+          Task management designed specifically for individuals with ADHD
         </p>
       </div>
 
@@ -21,20 +37,34 @@
           <h2
             class="text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200"
           >
-            Core
+            What is toADHDo?
+          </h2>
+          <p class="text-blue-100/90 leading-relaxed">
+            Unlike traditional to-do list apps, toADHDo leverages AI to transform brief user notes—augmented by
+            additional profile context—into detailed, personalized task descriptions based on the SMART methodology
+            (Specific, Measurable, Achievable, Relevant, Time-Bound).
+          </p>
+        </div>
+
+        <div class="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
+          <h2
+            class="text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200"
+          >
+            Key Features
           </h2>
           <ul class="space-y-3">
             <li class="flex items-center space-x-3">
-              <span class="font-mono bg-blue-900/50 px-3 py-1.5 rounded-lg text-blue-200 shadow-sm">Astro v5.5.5</span>
-              <span class="text-blue-100/90">- Metaframework do aplikacji webowych</span>
+              <span class="font-mono bg-blue-900/50 px-3 py-1.5 rounded-lg text-blue-200 shadow-sm">AI-Powered</span>
+              <span class="text-blue-100/90">Generate detailed, SMART-compliant tasks from brief notes</span>
             </li>
             <li class="flex items-center space-x-3">
-              <span class="font-mono bg-blue-900/50 px-3 py-1.5 rounded-lg text-blue-200 shadow-sm">React v19</span>
-              <span class="text-blue-100/90">- Biblioteka UI do komponentów interaktywnych</span>
+              <span class="font-mono bg-blue-900/50 px-3 py-1.5 rounded-lg text-blue-200 shadow-sm">Categorization</span
+              >
+              <span class="text-blue-100/90">Organize tasks into categories (A, B, C) with adjustable priorities</span>
             </li>
             <li class="flex items-center space-x-3">
-              <span class="font-mono bg-blue-900/50 px-3 py-1.5 rounded-lg text-blue-200 shadow-sm">TypeScript</span>
-              <span class="text-blue-100/90">- Typowanie statyczne</span>
+              <span class="font-mono bg-blue-900/50 px-3 py-1.5 rounded-lg text-blue-200 shadow-sm">Personalized</span>
+              <span class="text-blue-100/90">Tasks tailored to your individual context and needs</span>
             </li>
           </ul>
         </div>
@@ -43,47 +73,24 @@
           <h2
             class="text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200"
           >
-            Stylowanie
+            Why toADHDo?
           </h2>
-          <ul class="space-y-3">
-            <li class="flex items-center space-x-3">
-              <span class="font-mono bg-blue-900/50 px-3 py-1.5 rounded-lg text-blue-200 shadow-sm"
-                >Tailwind CSS v4</span
-              >
-              <span class="text-blue-100/90">- Utility-first CSS framework</span>
-            </li>
-          </ul>
-        </div>
-
-        <div class="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
-          <h2
-            class="text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200"
-          >
-            Statyczna analiza kodu
-          </h2>
-          <ul class="space-y-3">
-            <li class="flex items-center space-x-3">
-              <span class="font-mono bg-blue-900/50 px-3 py-1.5 rounded-lg text-blue-200 shadow-sm">ESLint v9</span>
-              <span class="text-blue-100/90">- Lintowanie kodu</span>
-            </li>
-            <li class="flex items-center space-x-3">
-              <span class="font-mono bg-blue-900/50 px-3 py-1.5 rounded-lg text-blue-200 shadow-sm">Prettier</span>
-              <span class="text-blue-100/90">- Formatowanie kodu</span>
-            </li>
-            <li class="flex items-center space-x-3">
-              <span class="font-mono bg-blue-900/50 px-3 py-1.5 rounded-lg text-blue-200 shadow-sm"
-                >Husky i Lint-staged</span
-              >
-              <span class="text-blue-100/90">- Automatyczna analiza kodu przed commitowaniem</span>
-            </li>
+          <p class="text-blue-100/90 leading-relaxed mb-4">
+            Individuals with ADHD often struggle with concentration, planning, and maintaining motivation. Traditional
+            to-do lists fall short because they:
+          </p>
+          <ul class="space-y-2 list-disc pl-5 text-blue-100/90">
+            <li>Don't transform brief notes into detailed SMART descriptions</li>
+            <li>Don't consider your individual context</li>
+            <li>Lack intuitive tools for editing, organizing, and prioritizing tasks</li>
           </ul>
         </div>
       </div>
 
       <p class="text-lg text-center text-blue-100/90 mt-8 leading-relaxed">
-        Starter zawiera wszystko, czego potrzebujesz do rozpoczęcia tworzenia <br class="hidden sm:block" />
+        Ready to try a task management app that adapts to how your brain works? <br class="hidden sm:block" />
         <span class="font-semibold bg-gradient-to-r from-blue-200 to-purple-200 text-transparent bg-clip-text"
-          >nowoczesnych aplikacji webowych!</span
+          >Create an account today and start managing tasks effectively!</span
         >
       </p>
     </div>
