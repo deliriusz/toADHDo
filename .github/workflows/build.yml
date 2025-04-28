@@ -1,0 +1,52 @@
+name: Build and Test CI
+
+on:
+  push:
+    branches:
+      - master # Trigger on push to master branch
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  build_and_test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js from .nvmrc
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc' # Use version from .nvmrc
+          cache: 'npm' # Cache npm dependencies
+
+      - name: Install dependencies
+        run: npm ci # Use ci for cleaner installs in CI
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps # Install browsers needed for E2E tests
+
+      - name: Run E2E tests
+        run: |
+          # Start dev server in background for E2E tests (using the specific test mode)
+          npm run dev:e2e &
+          # Wait for the server to be ready on port 4321 (default Astro port)
+          npx wait-on http://localhost:4321 -t 60000
+          # Run Playwright tests
+          npm run test:e2e
+        # env: # Add secrets here if E2E tests require them
+          # SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          # SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: Build project
+        run: npm run build
+        # env: # Add secrets here if the build process requires them
+          # PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }} # Example for Astro public env var
+          # PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }} # Example
