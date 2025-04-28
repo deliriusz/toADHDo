@@ -148,9 +148,9 @@ export default function ModalDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-3xl rounded-md border shadow-lg sm:max-w-[90vw] md:max-w-3xl">
-        <DialogHeader className="bg-muted/50 pb-2 pt-4">
-          <DialogTitle className="flex items-center text-xl">
+      <DialogContent className="max-w-3xl backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 rounded-2xl border-white/10 shadow-2xl sm:max-w-[90vw] md:max-w-3xl text-white">
+        <DialogHeader className="bg-white/5 pb-2 pt-4 rounded-t-xl">
+          <DialogTitle className="flex items-center text-xl text-blue-100">
             <FileTextIcon className="mr-2 h-5 w-5" />
             Review Generated Description
           </DialogTitle>
@@ -159,7 +159,7 @@ export default function ModalDialog() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="space-y-2 md:col-span-1">
               <div className="flex items-center justify-between">
-                <label htmlFor={originalNoteId} className="text-sm font-medium">
+                <label htmlFor={originalNoteId} className="text-sm font-medium text-blue-100">
                   Original Note
                 </label>
               </div>
@@ -167,12 +167,12 @@ export default function ModalDialog() {
                 id={originalNoteId}
                 value={originalDescription}
                 readOnly
-                className="min-h-[100px] resize-none bg-muted text-muted-foreground"
+                className="min-h-[100px] resize-none bg-white/5 border-white/10 text-blue-100/90"
                 disabled={isLoading}
               />
 
               <div className="mt-4 space-y-2">
-                <label htmlFor={categoryId} className="text-sm font-medium">
+                <label htmlFor={categoryId} className="text-sm font-medium text-blue-100">
                   Priority
                 </label>
                 <div id={categoryId}>
@@ -188,11 +188,11 @@ export default function ModalDialog() {
 
             <div className="space-y-2 md:col-span-2">
               <div className="flex items-center justify-between">
-                <label htmlFor={generatedDescriptionId} className="text-sm font-medium">
+                <label htmlFor={generatedDescriptionId} className="text-sm font-medium text-blue-100">
                   Generated Description
                 </label>
                 <span
-                  className={`text-xs ${editedDescription.length > MAX_DESCRIPTION_LENGTH ? "text-destructive" : "text-muted-foreground"}`}
+                  className={`text-xs ${editedDescription.length > MAX_DESCRIPTION_LENGTH ? "text-rose-300" : "text-blue-100/70"}`}
                 >
                   {editedDescription.length}/{MAX_DESCRIPTION_LENGTH}
                 </span>
@@ -201,29 +201,34 @@ export default function ModalDialog() {
                 id={generatedDescriptionId}
                 value={editedDescription}
                 onChange={handleDescriptionChange}
-                className={`min-h-[220px] resize-none transition-colors ${error ? "border-destructive" : ""}`}
+                className={`min-h-[220px] resize-none transition-colors bg-white/5 border-white/10 text-blue-100 ${error ? "border-rose-400" : ""}`}
                 placeholder="Edit the generated description if needed..."
                 disabled={isLoading}
                 aria-invalid={error ? "true" : "false"}
                 aria-describedby={error ? "description-error" : undefined}
               />
               {error && (
-                <p id="description-error" className="text-sm text-destructive mt-1">
+                <p id="description-error" className="text-sm text-rose-300 mt-1">
                   {error}
                 </p>
               )}
             </div>
           </div>
         </div>
-        <hr className="my-1 h-px w-full bg-border" />
+        <hr className="my-1 h-px w-full bg-white/10" />
         <DialogFooter className="flex items-center justify-between gap-2 px-6 py-4 sm:justify-between">
-          <Button variant="outline" onClick={handleClose} disabled={isLoading} className="px-4">
+          <Button
+            variant="outline"
+            onClick={handleClose}
+            disabled={isLoading}
+            className="px-4 border-white/20 text-blue-100 hover:bg-white/10 hover:text-white"
+          >
             Cancel
           </Button>
           <Button
             onClick={handleAccept}
             disabled={isLoading || !!error}
-            className="min-w-[180px] transition-all"
+            className="min-w-[180px] transition-all bg-white/10 text-blue-100 hover:bg-white/20 hover:text-white border border-white/20"
             size="default"
           >
             {isLoading ? (

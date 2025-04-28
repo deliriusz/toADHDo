@@ -18,7 +18,7 @@ const { title = "toADHDo" } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
-  <body>
+  <body class="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900">
     <slot />
     <Toaster richColors closeButton client:only="react" />
   </body>

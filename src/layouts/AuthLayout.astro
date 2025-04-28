@@ -18,19 +18,25 @@ const { title = "toADHDo" } = Astro.props;
     <title>{title}</title>
     <ViewTransitions />
   </head>
-  <body class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <body class="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900">
     <div class="container mx-auto flex min-h-screen flex-col items-center justify-center px-4 py-8">
       <header class="mb-8 text-center">
-        <h1 class="text-4xl font-bold text-primary">toADHDo</h1>
-        <p class="mt-2 text-lg text-muted-foreground">Task management designed for ADHD brains</p>
+        <h1
+          class="text-4xl font-bold bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 text-transparent bg-clip-text drop-shadow-lg"
+        >
+          toADHDo
+        </h1>
+        <p class="mt-2 text-lg text-blue-100/90">Task management designed for ADHD brains</p>
       </header>
 
-      <main class="w-full max-w-md rounded-lg border bg-card p-8 shadow-sm">
+      <main
+        class="w-full max-w-md backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 rounded-2xl p-8 shadow-2xl border border-white/10 text-white"
+      >
         <slot />
         <Toaster richColors closeButton client:only="react" />
       </main>
 
-      <footer class="mt-8 text-center text-sm text-muted-foreground">
+      <footer class="mt-8 text-center text-sm text-blue-100/70">
         <p>&copy; {new Date().getFullYear()} toADHDo. All rights reserved.</p>
       </footer>
     </div>

@@ -249,10 +249,12 @@ export function TaskTableContainer() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 relative w-4/5 mx-auto backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 rounded-2xl shadow-2xl p-8 text-white border border-white/10">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Tasks</h1>
-        <LogoutButton variant="outline" size="sm" />
+        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 text-transparent bg-clip-text drop-shadow-lg">
+          Tasks
+        </h1>
+        <LogoutButton variant="outline" size="sm" className="text-blue-100 border-white/20 hover:bg-white/10" />
       </div>
 
       <ModalProvider>
@@ -263,16 +265,18 @@ export function TaskTableContainer() {
         />
         <MultiStepTaskCreationModal />
       </ModalProvider>
-      <TaskDataTable
-        table={table}
-        onStatusChange={handleStatusChange}
-        onCategoryChange={handleCategoryChange}
-        onPriorityChange={handlePriorityChange}
-        onEdit={handleEdit}
-        onDuplicate={duplicateTask}
-        onDelete={deleteTask}
-        isMutating={isMutating}
-      />
+      <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
+        <TaskDataTable
+          table={table}
+          onStatusChange={handleStatusChange}
+          onCategoryChange={handleCategoryChange}
+          onPriorityChange={handlePriorityChange}
+          onEdit={handleEdit}
+          onDuplicate={duplicateTask}
+          onDelete={deleteTask}
+          isMutating={isMutating}
+        />
+      </div>
       <Toaster />
     </div>
   );

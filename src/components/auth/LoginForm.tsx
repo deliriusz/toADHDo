@@ -64,26 +64,48 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {serverError && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="bg-red-500/20 border-rose-400 text-white">
           <AlertDescription>{serverError}</AlertDescription>
         </Alert>
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" placeholder="your.email@example.com" disabled={loading} {...register("email")} />
-        {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+        <Label htmlFor="email" className="text-blue-100">
+          Email
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="your.email@example.com"
+          disabled={loading}
+          {...register("email")}
+          className="bg-white/5 border-white/20 text-blue-100 placeholder:text-blue-100/50 focus:border-blue-200/30 focus:ring-blue-200/20"
+        />
+        {errors.email && <p className="text-sm text-rose-300">{errors.email.message}</p>}
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password" className="text-blue-100">
+            Password
+          </Label>
         </div>
-        <Input id="password" type="password" placeholder="••••••••" disabled={loading} {...register("password")} />
-        {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+        <Input
+          id="password"
+          type="password"
+          placeholder="••••••••"
+          disabled={loading}
+          {...register("password")}
+          className="bg-white/5 border-white/20 text-blue-100 placeholder:text-blue-100/50 focus:border-blue-200/30 focus:ring-blue-200/20"
+        />
+        {errors.password && <p className="text-sm text-rose-300">{errors.password.message}</p>}
       </div>
 
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button
+        type="submit"
+        className="w-full bg-white/10 border border-white/20 text-blue-100 hover:bg-white/20 hover:text-white"
+        disabled={loading}
+      >
         {loading && <LoadingSpinner className="mr-2 h-4 w-4" />}
         Sign In
       </Button>

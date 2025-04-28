@@ -6,10 +6,8 @@ import type { ChangeEvent } from "react";
 import { Button } from "../ui/button";
 import { PlusIcon } from "lucide-react";
 import { MixerHorizontalIcon, CheckIcon, CircleIcon } from "@radix-ui/react-icons";
-import type { TaskCategory } from "@/types";
 
 // Import the context object directly
-import { ModalProvider } from "../contexts/ModalContext";
 import { useModalContext } from "../contexts/ModalContext";
 
 interface TaskTableToolbarProps {
@@ -27,10 +25,7 @@ export function TaskTableToolbar({ filters, onFilterChange, selectedRowCount }: 
   );
 
   const handleAddTaskClick = () => {
-    // For now, let's just navigate to the tasks/new page
-    // This ensures it works whether or not ModalContext is available
     openModal("", "", "B");
-    // window.location.href = "/tasks/new";
   };
 
   return (

@@ -210,7 +210,7 @@ export const MultiStepTaskCreationModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-3xl rounded-md border shadow-lg sm:max-w-[90vw] md:max-w-3xl">
+      <DialogContent className="max-w-3xl backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 rounded-2xl border border-white/10 shadow-2xl sm:max-w-[90vw] md:max-w-3xl text-white">
         <div className="p-4">
           <div className="flex items-center justify-center mb-4">
             {Array.from({ length: totalSteps }).map((_, index) => (
@@ -218,23 +218,23 @@ export const MultiStepTaskCreationModal = () => {
                 <div
                   className={cn(
                     "w-4 h-4 rounded-full transition-all duration-300 ease-in-out",
-                    index <= step ? "bg-primary" : "bg-primary/30"
+                    index <= step ? "bg-blue-200" : "bg-white/20"
                   )}
                 />
                 {index < totalSteps - 1 && (
-                  <div className={cn("w-8 h-0.5", index < step ? "bg-primary" : "bg-primary/30")} />
+                  <div className={cn("w-8 h-0.5", index < step ? "bg-blue-200" : "bg-white/20")} />
                 )}
               </div>
             ))}
           </div>
 
-          <Card className="shadow-sm border-0">
-            <CardHeader className="bg-muted/50 pb-2 pt-4">
-              <CardTitle className="flex items-center text-xl">
+          <Card className="shadow-lg border-0 backdrop-blur-lg bg-gradient-to-b from-white/5 to-white/0 text-white">
+            <CardHeader className="bg-white/5 pb-2 pt-4 rounded-t-lg">
+              <CardTitle className="flex items-center text-xl text-blue-100">
                 <FileTextIcon className="mr-2 h-5 w-5" />
                 {step === 0 ? "Create New Task" : "Review Generated Description"}
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-blue-100/70">
                 Step {step + 1} of {totalSteps}
               </CardDescription>
             </CardHeader>
@@ -243,10 +243,10 @@ export const MultiStepTaskCreationModal = () => {
               {step === 0 && (
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <label htmlFor={noteId} className="text-sm font-medium flex justify-between">
+                    <label htmlFor={noteId} className="text-sm font-medium flex justify-between text-blue-100">
                       <span>Quick Note</span>
                       <span
-                        className={`text-xs ${note.length > MAX_NOTE_LENGTH ? "text-destructive" : "text-muted-foreground"}`}
+                        className={`text-xs ${note.length > MAX_NOTE_LENGTH ? "text-rose-300" : "text-blue-100/70"}`}
                       >
                         {note.length}/{MAX_NOTE_LENGTH}
                       </span>
@@ -256,13 +256,13 @@ export const MultiStepTaskCreationModal = () => {
                       placeholder="Enter a quick note about your task..."
                       value={note}
                       onChange={handleNoteChange}
-                      className={`min-h-[100px] resize-none transition-colors ${error ? "border-destructive" : ""}`}
+                      className={`min-h-[100px] resize-none transition-colors bg-white/5 border-white/20 text-blue-100 placeholder:text-blue-100/50 ${error ? "border-rose-400" : ""}`}
                       disabled={isLoading}
                       aria-invalid={error ? "true" : "false"}
                       aria-describedby={error ? "note-error" : undefined}
                     />
                     {error && (
-                      <p id="note-error" className="text-sm text-destructive mt-1">
+                      <p id="note-error" className="text-sm text-rose-300 mt-1">
                         {error}
                       </p>
                     )}
@@ -270,7 +270,7 @@ export const MultiStepTaskCreationModal = () => {
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label htmlFor={categoryId} className="text-sm font-medium">
+                      <label htmlFor={categoryId} className="text-sm font-medium text-blue-100">
                         Priority Category
                       </label>
                       <div id={categoryId} className="flex-shrink-0">
@@ -291,7 +291,7 @@ export const MultiStepTaskCreationModal = () => {
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                     <div className="space-y-2 md:col-span-1">
                       <div className="flex items-center justify-between">
-                        <label htmlFor={originalNoteId} className="text-sm font-medium">
+                        <label htmlFor={originalNoteId} className="text-sm font-medium text-blue-100">
                           Original Note
                         </label>
                       </div>
@@ -299,12 +299,12 @@ export const MultiStepTaskCreationModal = () => {
                         id={originalNoteId}
                         value={note}
                         readOnly
-                        className="min-h-[100px] resize-none bg-muted text-muted-foreground"
+                        className="min-h-[100px] resize-none bg-white/5 border-white/20 text-blue-100/80"
                         disabled={isLoading}
                       />
 
                       <div className="mt-4 space-y-2">
-                        <label htmlFor={categoryId} className="text-sm font-medium">
+                        <label htmlFor={categoryId} className="text-sm font-medium text-blue-100">
                           Priority
                         </label>
                         <div id={categoryId}>
@@ -320,11 +320,11 @@ export const MultiStepTaskCreationModal = () => {
 
                     <div className="space-y-2 md:col-span-2">
                       <div className="flex items-center justify-between">
-                        <label htmlFor={generatedDescriptionId} className="text-sm font-medium">
+                        <label htmlFor={generatedDescriptionId} className="text-sm font-medium text-blue-100">
                           Generated Description
                         </label>
                         <span
-                          className={`text-xs ${editedDescription.length > MAX_DESCRIPTION_LENGTH ? "text-destructive" : "text-muted-foreground"}`}
+                          className={`text-xs ${editedDescription.length > MAX_DESCRIPTION_LENGTH ? "text-rose-300" : "text-blue-100/70"}`}
                         >
                           {editedDescription.length}/{MAX_DESCRIPTION_LENGTH}
                         </span>
@@ -333,14 +333,14 @@ export const MultiStepTaskCreationModal = () => {
                         id={generatedDescriptionId}
                         value={editedDescription}
                         onChange={handleDescriptionChange}
-                        className={`min-h-[220px] resize-none transition-colors ${error ? "border-destructive" : ""}`}
+                        className={`min-h-[220px] resize-none transition-colors bg-white/5 border-white/20 text-blue-100 placeholder:text-blue-100/50 ${error ? "border-rose-400" : ""}`}
                         placeholder="Edit the generated description if needed..."
                         disabled={isLoading}
                         aria-invalid={error ? "true" : "false"}
                         aria-describedby={error ? "description-error" : undefined}
                       />
                       {error && (
-                        <p id="description-error" className="text-sm text-destructive mt-1">
+                        <p id="description-error" className="text-sm text-rose-300 mt-1">
                           {error}
                         </p>
                       )}
@@ -350,16 +350,21 @@ export const MultiStepTaskCreationModal = () => {
               )}
             </CardContent>
 
-            <CardFooter className="flex items-center justify-between gap-2 px-6 py-4 sm:justify-between bg-muted/30">
+            <CardFooter className="flex items-center justify-between gap-2 px-6 py-4 sm:justify-between bg-white/5 rounded-b-lg">
               {step === 0 ? (
                 <>
-                  <Button variant="outline" onClick={handleClose} disabled={isLoading} className="px-4">
+                  <Button
+                    variant="outline"
+                    onClick={handleClose}
+                    disabled={isLoading}
+                    className="px-4 border-white/20 text-blue-100 hover:bg-white/10 hover:text-white"
+                  >
                     Cancel
                   </Button>
                   <Button
                     onClick={handleGenerateDescription}
                     disabled={isLoading || !!error}
-                    className="min-w-[170px] transition-all"
+                    className="min-w-[170px] transition-all bg-white/10 text-blue-100 hover:bg-white/20 hover:text-white border border-white/20"
                     size="default"
                   >
                     {isLoading ? (
@@ -374,13 +379,18 @@ export const MultiStepTaskCreationModal = () => {
                 </>
               ) : (
                 <>
-                  <Button variant="outline" onClick={handleBack} disabled={isLoading} className="px-4">
+                  <Button
+                    variant="outline"
+                    onClick={handleBack}
+                    disabled={isLoading}
+                    className="px-4 border-white/20 text-blue-100 hover:bg-white/10 hover:text-white"
+                  >
                     Back
                   </Button>
                   <Button
                     onClick={handleCreateTask}
                     disabled={isLoading || !!error}
-                    className="min-w-[180px] transition-all"
+                    className="min-w-[180px] transition-all bg-white/10 text-blue-100 hover:bg-white/20 hover:text-white border border-white/20"
                     size="default"
                   >
                     {isLoading ? (
