@@ -61,5 +61,5 @@ export function calculateLexoRank(prev: LexoRank | string, next: LexoRank | stri
     break;
   }
 
-  return rank >= next.rank ? prev : stringToLexoRank(rank);
+  return rank >= next.rank ? prev : { bucket: prev.bucket, rank, marker: prev.marker };
 }
