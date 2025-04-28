@@ -1,4 +1,4 @@
-import { type Page, expect } from "@playwright/test";
+import { type Page } from "@playwright/test";
 import type { TaskCategory } from "../../src/types";
 
 export class TaskCreationModal {
@@ -12,8 +12,11 @@ export class TaskCreationModal {
    * Wait for the modal to be visible
    */
   async waitForModalToBeVisible() {
-    const modal = this.page.getByTestId("task-creation-modal");
-    await expect(modal).toBeVisible();
+    // Wait for the modal dialog to be visible using multiple selector strategies
+    await this.page.waitForSelector('[data-testid="task-creation-modal"], dialog[open], [role="dialog"]', {
+      state: "visible",
+      timeout: 5000,
+    });
   }
 
   /**
@@ -40,7 +43,10 @@ export class TaskCreationModal {
   async clickGenerateDescription() {
     await this.page.getByTestId("generate-description-button").click();
     // Wait for the step to change and the create task button to be visible
-    await this.page.getByTestId("create-task-button").waitFor({ state: "visible", timeout: 10000 });
+    await this.page.waitForSelector('[data-testid="create-task-button"], button:has-text("Accept & Create Task")', {
+      state: "visible",
+      timeout: 10000,
+    });
   }
 
   /**

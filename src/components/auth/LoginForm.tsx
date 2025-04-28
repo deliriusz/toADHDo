@@ -80,6 +80,7 @@ export default function LoginForm() {
           disabled={loading}
           {...register("email")}
           className="bg-white/5 border-white/20 text-blue-100 placeholder:text-blue-100/50 focus:border-blue-200/30 focus:ring-blue-200/20"
+          data-testid="email-input"
         />
         {errors.email && <p className="text-sm text-rose-300">{errors.email.message}</p>}
       </div>
@@ -97,6 +98,7 @@ export default function LoginForm() {
           disabled={loading}
           {...register("password")}
           className="bg-white/5 border-white/20 text-blue-100 placeholder:text-blue-100/50 focus:border-blue-200/30 focus:ring-blue-200/20"
+          data-testid="password-input"
         />
         {errors.password && <p className="text-sm text-rose-300">{errors.password.message}</p>}
       </div>
@@ -105,6 +107,7 @@ export default function LoginForm() {
         type="submit"
         className="w-full bg-white/10 border border-white/20 text-blue-100 hover:bg-white/20 hover:text-white"
         disabled={loading}
+        data-testid="login-button"
       >
         {loading && <LoadingSpinner className="mr-2 h-4 w-4" />}
         Sign In
