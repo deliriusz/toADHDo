@@ -2,14 +2,18 @@
 
 ## Table of Contents
 
-- [Project Name](#project-name)
-- [Project Description](#project-description)
-- [Tech Stack](#tech-stack)
-- [Getting Started Locally](#getting-started-locally)
-- [Available Scripts](#available-scripts)
-- [Project Scope](#project-scope)
-- [Project Status](#project-status)
-- [License](#license)
+- [toADHDo (MVP)](#toadhdo-mvp)
+  - [Table of Contents](#table-of-contents)
+  - [Project Name](#project-name)
+  - [Project Description](#project-description)
+  - [Tech Stack](#tech-stack)
+  - [Getting Started Locally](#getting-started-locally)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+  - [Available Scripts](#available-scripts)
+  - [Project Scope](#project-scope)
+  - [Project Status](#project-status)
+  - [License](#license)
 
 ## Project Name
 
