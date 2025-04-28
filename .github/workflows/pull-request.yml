@@ -1,10 +1,9 @@
 name: Pull Request Validation
 
 on:
-  push:
-    branches:
-      - master # Trigger on push to master branch
-  workflow_dispatch: # Allow manual triggering
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize, reopened]
 
 jobs:
   lint:
