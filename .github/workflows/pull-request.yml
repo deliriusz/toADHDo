@@ -154,6 +154,3 @@ jobs:
               repo: context.repo.repo,
               body: comment
             }); 
-              repo: context.repo.repo,
-              body: comment
-            }); 
