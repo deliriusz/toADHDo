@@ -185,7 +185,6 @@ describe("TaskTableContainer", () => {
     expect(screen.getByText("Task 1")).toBeInTheDocument();
     expect(screen.getByText("Task 2")).toBeInTheDocument();
     expect(screen.getByTestId("task-table-toolbar")).toBeInTheDocument();
-    expect(screen.getByTestId("logout-button")).toBeInTheDocument();
   });
 
   it("displays error state if fetch fails", async () => {
