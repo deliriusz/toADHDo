@@ -19,7 +19,7 @@ if (!E2E_USERNAME_ID) {
 
 const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_KEY);
 
-teardown("authenticate", async ({ page }) => {
+teardown("authenticate", async () => {
   try {
     console.log(`Cleaning up test data for user_id: ${E2E_USERNAME_ID}`);
     // Delete from processing_log first due to FK constraint

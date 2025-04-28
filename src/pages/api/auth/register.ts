@@ -46,6 +46,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     // Usunięcie confirmPassword z danych rejestracji
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword: _, ...registerData } = result.data;
 
     // Rejestracja użytkownika przy użyciu Supabase

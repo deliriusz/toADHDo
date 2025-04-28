@@ -17,7 +17,7 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
 }
 
 export function createSupabaseServer(context: { headers: Headers; cookies: AstroCookies }) {
-  return createServerClient<Database>(import.meta.env.SUPABASE_URL!, import.meta.env.SUPABASE_KEY!, {
+  return createServerClient<Database>(import.meta.env.SUPABASE_URL, import.meta.env.SUPABASE_KEY, {
     cookieOptions,
     cookies: {
       getAll() {
