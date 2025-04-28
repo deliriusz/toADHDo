@@ -37,17 +37,19 @@ export function TaskTablePagination({ table }: TaskTablePaginationProps) {
         </div>
         <div className="flex items-center space-x-2">
           <Button
-            variant="outline"
+            variant="default"
             className="hidden h-8 w-8 p-0 lg:flex"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Go to first page</span>
-            <ChevronLeftIcon className="h-4 w-4" />
-            <ChevronLeftIcon className="h-4 w-4" />
+            <span className="flex items-center justify-center">
+              <ChevronLeftIcon className="h-4 w-4" />
+              <ChevronLeftIcon className="h-4 w-4" />
+            </span>
           </Button>
           <Button
-            variant="outline"
+            variant="default"
             className="h-8 w-8 p-0"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
@@ -56,7 +58,7 @@ export function TaskTablePagination({ table }: TaskTablePaginationProps) {
             <ChevronLeftIcon className="h-4 w-4" />
           </Button>
           <Button
-            variant="outline"
+            variant="default"
             className="h-8 w-8 p-0"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
@@ -65,14 +67,16 @@ export function TaskTablePagination({ table }: TaskTablePaginationProps) {
             <ChevronRightIcon className="h-4 w-4" />
           </Button>
           <Button
-            variant="outline"
+            variant="default"
             className="hidden h-8 w-8 p-0 lg:flex"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to last page</span>
-            <ChevronRightIcon className="h-4 w-4" />
-            <ChevronRightIcon className="h-4 w-4" />
+            <span className="flex items-center justify-center">
+              <ChevronRightIcon className="h-4 w-4" />
+              <ChevronRightIcon className="h-4 w-4" />
+            </span>
           </Button>
         </div>
       </div>

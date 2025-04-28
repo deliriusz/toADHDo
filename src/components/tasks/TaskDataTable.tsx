@@ -38,7 +38,7 @@ export function TaskDataTable({
         <UITable data-testid="task-data-table">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-12">
+              <TableHead className="w-12 text-white text-lg">
                 <Checkbox
                   checked={table.getIsAllPageRowsSelected()}
                   onCheckedChange={(value: boolean | "indeterminate") => table.toggleAllPageRowsSelected(!!value)}
@@ -47,11 +47,11 @@ export function TaskDataTable({
                   disabled={isMutating}
                 />
               </TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="w-24">Status</TableHead>
-              <TableHead className="w-24">Category</TableHead>
-              <TableHead className="w-24">Priority</TableHead>
-              <TableHead className="w-24">Actions</TableHead>
+              <TableHead className="text-white text-md">Description</TableHead>
+              <TableHead className="w-24 text-white text-md">Status</TableHead>
+              <TableHead className="w-24 text-white text-md">Category</TableHead>
+              <TableHead className="w-24 text-white text-md">Priority</TableHead>
+              <TableHead className="w-24 text-white text-md">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -60,6 +60,7 @@ export function TaskDataTable({
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
                 data-testid={`task-row-${row.original.id}`}
+                className={row.getIsSelected() ? "bg-purple-800/40 hover:bg-purple-700/50 text-white" : ""}
               >
                 <TableCell className="w-12">
                   <Checkbox
