@@ -5,10 +5,6 @@ on:
     branches:
       - master # Trigger on push to master branch
   workflow_dispatch: # Allow manual triggering
-on:
-  pull_request:
-    branches:
-      - master
 
 jobs:
   lint:
@@ -155,6 +151,9 @@ jobs:
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            }); 
               repo: context.repo.repo,
               body: comment
             }); 
