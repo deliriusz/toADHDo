@@ -1,6 +1,4 @@
 TaskTableContainer
-├── LogoutButton
-│   └── LoadingSpinner
 ├── TaskTableToolbar
 │   ├── Input
 │   ├── Select
@@ -8,7 +6,7 @@ TaskTableContainer
 │   │   │   └── SelectValue
 │   │   └── SelectContent
 │   │       └── SelectItem
-│   └── Button
+│   └── Button (MultiStepTaskCreationModal)
 │       └── PlusIcon
 ├── TaskDataTable
 │   ├── UITable

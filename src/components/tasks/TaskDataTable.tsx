@@ -35,7 +35,7 @@ export function TaskDataTable({
   return (
     <div className="space-y-4">
       <div className="rounded-md border">
-        <UITable>
+        <UITable data-testid="task-data-table">
           <TableHeader>
             <TableRow>
               <TableHead className="w-12">
@@ -56,7 +56,11 @@ export function TaskDataTable({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+                data-testid={`task-row-${row.original.id}`}
+              >
                 <TableCell className="w-12">
                   <Checkbox
                     checked={row.getIsSelected()}

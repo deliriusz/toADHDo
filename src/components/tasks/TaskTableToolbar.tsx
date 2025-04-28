@@ -84,7 +84,7 @@ export function TaskTableToolbar({ filters, onFilterChange, selectedRowCount }: 
           </SelectContent>
         </Select>
 
-        <Button size="sm" variant="default" onClick={handleAddTaskClick}>
+        <Button size="sm" variant="default" onClick={handleAddTaskClick} data-testid="add-task-button">
           <PlusIcon className="size-4" />
           Add Task
         </Button>

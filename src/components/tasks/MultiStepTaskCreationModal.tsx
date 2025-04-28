@@ -209,7 +209,7 @@ export const MultiStepTaskCreationModal = () => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose} data-testid="task-creation-modal">
       <DialogContent className="max-w-3xl backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 rounded-2xl border border-white/10 shadow-2xl sm:max-w-[90vw] md:max-w-3xl text-white">
         <div className="p-4">
           <div className="flex items-center justify-center mb-4">
@@ -260,6 +260,7 @@ export const MultiStepTaskCreationModal = () => {
                       disabled={isLoading}
                       aria-invalid={error ? "true" : "false"}
                       aria-describedby={error ? "note-error" : undefined}
+                      data-testid="task-note-input"
                     />
                     {error && (
                       <p id="note-error" className="text-sm text-rose-300 mt-1">
@@ -279,6 +280,7 @@ export const MultiStepTaskCreationModal = () => {
                           currentCategory={category}
                           onCategoryChange={handleCategoryChange}
                           disabled={isLoading}
+                          data-testid="task-category-toggle-step0"
                         />
                       </div>
                     </div>
@@ -366,6 +368,7 @@ export const MultiStepTaskCreationModal = () => {
                     disabled={isLoading || !!error}
                     className="min-w-[170px] transition-all bg-white/10 text-blue-100 hover:bg-white/20 hover:text-white border border-white/20"
                     size="default"
+                    data-testid="generate-description-button"
                   >
                     {isLoading ? (
                       <>
@@ -392,6 +395,7 @@ export const MultiStepTaskCreationModal = () => {
                     disabled={isLoading || !!error}
                     className="min-w-[180px] transition-all bg-white/10 text-blue-100 hover:bg-white/20 hover:text-white border border-white/20"
                     size="default"
+                    data-testid="create-task-button"
                   >
                     {isLoading ? (
                       <>
