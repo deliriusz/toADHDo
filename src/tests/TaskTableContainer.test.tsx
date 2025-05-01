@@ -63,8 +63,8 @@ vi.mock("@/components/tasks/TaskDataTable", () => ({
     )
   ),
 }));
-vi.mock("@/components/ui/LogoutButton", () => ({
-  LogoutButton: vi.fn(() => <button data-testid="logout-button">Logout</button>),
+vi.mock("@/components/ui/UserNavigation", () => ({
+  UserNavigation: vi.fn(() => <button data-testid="user-navigation">User</button>),
 }));
 vi.mock("@/components/ui/loading-spinner", () => ({
   LoadingSpinner: vi.fn(() => <div data-testid="loading-spinner">Loading...</div>),

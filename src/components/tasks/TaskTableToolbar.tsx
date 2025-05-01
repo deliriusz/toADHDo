@@ -30,10 +30,10 @@ export function TaskTableToolbar({ filters, onFilterChange, selectedRowCount }: 
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex flex-1 items-center space-x-2">
+      <div className="flex flex-1 flex-wrap items-center gap-2">
         <Input
           placeholder="Filter tasks..."
-          className="h-8 w-full sm:w-[150px] lg:w-[500px]"
+          className="h-8 w-full sm:w-[150px] lg:w-[300px] xl:w-[500px]"
           defaultValue={filters.description}
           onChange={(e: ChangeEvent<HTMLInputElement>) => debouncedDescriptionChange(e.target.value)}
         />
@@ -42,7 +42,7 @@ export function TaskTableToolbar({ filters, onFilterChange, selectedRowCount }: 
           value={filters.status}
           onValueChange={(value: string) => onFilterChange({ status: value as TaskTableFiltersViewModel["status"] })}
         >
-          <SelectTrigger className="h-8 w-[170px]">
+          <SelectTrigger className="h-8 w-[130px] md:w-[170px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -73,7 +73,7 @@ export function TaskTableToolbar({ filters, onFilterChange, selectedRowCount }: 
             onFilterChange({ category: value as TaskTableFiltersViewModel["category"] })
           }
         >
-          <SelectTrigger className="h-8 w-[120px]">
+          <SelectTrigger className="h-8 w-[110px] md:w-[120px]">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -84,8 +84,14 @@ export function TaskTableToolbar({ filters, onFilterChange, selectedRowCount }: 
           </SelectContent>
         </Select>
 
-        <Button size="sm" variant="default" onClick={handleAddTaskClick} data-testid="add-task-button">
-          <PlusIcon className="size-4" />
+        <Button
+          size="sm"
+          variant="default"
+          className="text-black-500 border-white/30 bg-white/14 hover:bg-white/30"
+          onClick={handleAddTaskClick}
+          data-testid="add-task-button"
+        >
+          <PlusIcon className="size-4 mr-1" />
           Add Task
         </Button>
       </div>

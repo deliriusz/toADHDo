@@ -1,17 +1,25 @@
 import { useState } from "react";
+import { User } from "lucide-react";
 import { LoadingSpinner } from "./loading-spinner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./dropdown-menu";
+import { cn } from "@/lib/utils";
 
-interface LogoutButtonProps {
+interface UserNavigationProps {
   className?: string;
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
   size?: "default" | "sm" | "lg" | "icon";
 }
 
-export function LogoutButton({ className, variant = "default", size = "default" }: LogoutButtonProps) {
+export function UserNavigation({ className, variant = "ghost", size = "icon" }: UserNavigationProps) {
   const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
-    console.log("Logout button clicked");
     try {
       setLoading(true);
       console.log("Making logout request to /api/auth/logout");
@@ -23,11 +31,7 @@ export function LogoutButton({ className, variant = "default", size = "default" 
         },
       });
 
-      console.log("Logout response status:", response.status);
-
       if (response.ok) {
-        console.log("Logout successful, redirecting to home page");
-        // Przekierowanie do strony logowania po udanym wylogowaniu
         window.location.href = "/";
       } else {
         const errorData = await response.json().catch(() => ({ error: "Failed to parse response" }));
@@ -38,6 +42,10 @@ export function LogoutButton({ className, variant = "default", size = "default" 
       console.error("Logout error:", error);
       setLoading(false);
     }
+  };
+
+  const navigateTo = (path: string) => {
+    window.location.href = path;
   };
 
   // Apply appropriate styles based on variant and size
@@ -56,6 +64,8 @@ export function LogoutButton({ className, variant = "default", size = "default" 
       baseStyles += "h-10 px-6 text-base ";
     } else if (size === "sm") {
       baseStyles += "h-8 px-3 text-sm ";
+    } else if (size === "icon") {
+      baseStyles += "h-9 w-9 ";
     } else {
       baseStyles += "h-9 px-4 text-sm ";
     }
@@ -69,9 +79,23 @@ export function LogoutButton({ className, variant = "default", size = "default" 
   };
 
   return (
-    <button onClick={handleLogout} className={getButtonStyles()} disabled={loading} type="button">
-      {loading && <LoadingSpinner className="mr-2 h-4 w-4" />}
-      Sign Out
-    </button>
+    <DropdownMenu>
+      <DropdownMenuTrigger className={cn(getButtonStyles())}>
+        {loading ? <LoadingSpinner className="h-5 w-5" /> : <User className="h-5 w-5" />}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => navigateTo("/profile")} disabled={loading}>
+          Profile
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigateTo("/tasks")} disabled={loading}>
+          Tasks
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleLogout} disabled={loading} variant="destructive">
+          {loading && <LoadingSpinner className="mr-2 h-4 w-4" />}
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

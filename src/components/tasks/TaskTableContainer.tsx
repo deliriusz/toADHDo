@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { ModalProvider } from "@/components/contexts/ModalContext";
 import { MultiStepTaskCreationModal } from "./MultiStepTaskCreationModal";
+import { UserNavigation } from "@/components/ui/UserNavigation";
 
 // View Models for component state
 export interface TaskTableFiltersViewModel {
@@ -253,6 +254,11 @@ export function TaskTableContainer() {
         <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 text-transparent bg-clip-text drop-shadow-lg">
           Tasks
         </h1>
+        <UserNavigation
+          variant="default"
+          size="lg"
+          className="text-blue-100 border-white/20 bg-white/10 hover:bg-white/20"
+        />
       </div>
 
       <ModalProvider>

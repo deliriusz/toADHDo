@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { toast } from "sonner";
+import { UserNavigation } from "@/components/ui/UserNavigation";
 
 export default function ProfileForm() {
   const [context, setContext] = useState<string>("");
@@ -68,27 +69,45 @@ export default function ProfileForm() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="context">User Context</Label>
-        <Textarea
-          id="context"
-          value={context}
-          onChange={(e) => setContext(e.target.value)}
-          disabled={isLoading}
-          className="min-h-[12rem]"
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 text-transparent bg-clip-text drop-shadow-lg">
+          User Profile
+        </h1>
+        <UserNavigation
+          variant="default"
+          size="lg"
+          className="text-blue-100 border-white/20 bg-white/10 hover:bg-white/20"
         />
       </div>
 
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>{context.length}/5000</span>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleCancel} disabled={isLoading || context === initialContext}>
-            Cancel
-          </Button>
-          <Button size="sm" onClick={handleSave} disabled={isLoading || context === initialContext}>
-            {isLoading ? <LoadingSpinner /> : "Save"}
-          </Button>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="context">User Context</Label>
+          <Textarea
+            id="context"
+            value={context}
+            onChange={(e) => setContext(e.target.value)}
+            disabled={isLoading}
+            className="min-h-[12rem]"
+          />
+        </div>
+
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <span>{context.length}/5000</span>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCancel}
+              disabled={isLoading || context === initialContext}
+            >
+              Cancel
+            </Button>
+            <Button size="sm" onClick={handleSave} disabled={isLoading || context === initialContext}>
+              {isLoading ? <LoadingSpinner /> : "Save"}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
