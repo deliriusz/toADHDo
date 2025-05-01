@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { APIRoute } from "astro";
 import { getUser } from "@/lib/supabase-utils";
 import { OpenRouterService } from "@/lib/openrouter.service";
+import { getUserContext } from "@/lib/services/profileService";
 
 // Get OpenRouter API key from environment variables
 const OPENROUTER_API_KEY = import.meta.env.OPENROUTER_API_KEY;
@@ -38,7 +39,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(JSON.stringify({ error: errorMessage, original: err }), { status: 400 });
   }
 
-  const { description, userContext } = validated;
+  const { description } = validated;
+  let userContext = validated.userContext;
 
   try {
     // Create a dummy task_id for now as we don't have a real task yet
@@ -73,6 +75,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
 
     // Call OpenRouter service with the description
+    // Only fetch user context if it wasn't provided in the request
+    if (!userContext) {
+      const fetchedUserContext = await getUserContext(locals.supabase, user.id);
+      userContext = fetchedUserContext;
+    }
     const userMessage = `Task description: ${description}\n${userContext ? `Additional context: ${userContext}` : ""}`;
 
     // Process the description using OpenRouter service

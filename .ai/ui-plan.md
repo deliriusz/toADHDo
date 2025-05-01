@@ -48,7 +48,7 @@ Aplikacja toADHDo zapewnia responsywny interfejs użytkownika, który wspiera tr
 2.1. **Wyszukiwanie zadań:** Z widoku listy zadań użytkownik może przefiltrować dane po statusie zadania oraz kategorii. W tym przypadku wyłącznie zadania spełniające dane kryteria będą wyświetlone użytkownikowi.
 3. **Szczegóły zadania:** Kliknięcie na konkretne zadanie przekierowuje użytkownika do `/tasks/{id}`, gdzie widzi szczegóły zadania.
 4. **Generowanie opisu zadania:** Użytkownik przechodzi na stronę `/tasks/new` poprzez przycisk "nowy TODO" z widoku listy zadań, wprowadza dane w formularzu i uruchamia generowanie opisu. W modal dialogu otrzymuje wygenerowany opis i ma możliwość jego edycji albo akceptacji.
-5. **Zarządzanie kontekstem:** Użytkownik może przejść do widoku `/user-context`, aby zaktualizować dane kontekstowe.
+5. **Zarządzanie kontekstem:** Użytkownik może przejść do widoku `/profile`, aby zaktualizować dane kontekstowe.
 6. **Powrót do listy zadań:** Po zakończeniu akcji użytkownik wraca do listy zadań, aby zobaczyć zaktualizowaną listę zadań, komunikaty potwierdzające operacje wyświetlane są przez toast notifications.
 
 ## 4. Układ i struktura nawigacji
